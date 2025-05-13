@@ -1,0 +1,1910 @@
+/* Dark mode variables */
+:root {
+    --light-bg: #f8fafc;
+    --light-surface: #ffffff;
+    --light-border: #e2e8f0;
+    --light-text: #1e293b;
+    --light-text-secondary: #64748b;
+    --light-primary: #3b82f6;
+    
+    --dark-bg: #0f172a;
+    --dark-surface: #1e293b;
+    --dark-border: #334155;
+    --dark-text: #f1f5f9;
+    --dark-text-secondary: #94a3b8;
+    --dark-primary: #60a5fa;
+}
+
+.table-container {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+.table-row {
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+.table-row:hover {
+    background-color: #f8fafc !important;
+}
+.table-row:last-child {
+    border-bottom: none;
+}
+.table-header {
+    position: sticky !important;
+    top: 0 !important;
+    background: var(--light-surface) !important;
+    z-index: 20 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+    border-bottom: 1px solid var(--light-border) !important;
+}
+
+/* Fix for sticky header when scrolling */
+.sticky-header-container {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 30 !important;
+    background: var(--light-bg) !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    border-bottom: 1px solid var(--light-border) !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.dark-mode .sticky-header-container {
+    background: var(--dark-bg) !important;
+    border-color: var(--dark-border) !important;
+}
+
+.table-header th {
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0.01em;
+    color: #64748b;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.825rem;
+    vertical-align: middle;
+}
+.sortable {
+    transition: color 0.2s ease;
+}
+.sortable:hover {
+    color: #3b82f6;
+    cursor: pointer;
+}
+.checkbox-custom {
+    border-radius: 0.25rem;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+.checkbox-custom:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+/* Modern slider styles */
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 8px;
+    background: #e2e8f0;
+    outline: none;
+}
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+}
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    background: #2563eb;
+}
+.slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #3b82f6;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+}
+.slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+    background: #2563eb;
+}
+/* Search input animation */
+.search-input {
+    transition: all 0.3s ease;
+}
+.search-input:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+}
+.search-button {
+    transition: all 0.2s ease;
+}
+.search-button:hover {
+    transform: scale(1.1);
+}
+
+/* Modern Sidebar Styles - More Notion-like */
+.sidebar {
+    transition: all 0.3s ease;
+    z-index: 40;
+    width: 240px;
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+}
+
+.sidebar-collapsed {
+    width: 60px;
+}
+
+.sidebar-overlay {
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-menu-item {
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.25rem;
+    color: #64748b;
+}
+
+.sidebar-menu-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #334155;
+}
+
+.sidebar-menu-item.active {
+    background-color: rgba(0, 0, 0, 0.075);
+    color: #0f172a;
+    font-weight: 500;
+}
+
+.sidebar-menu-item .item-icon {
+    transition: all 0.2s ease;
+    width: 1.25rem;
+    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-menu-item:hover .item-icon {
+    transform: translateX(2px);
+}
+
+.sidebar-collapse-btn {
+    transition: all 0.3s ease;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.sidebar-collapse-btn:hover {
+    background-color: #e2e8f0;
+    color: #334155;
+}
+
+/* Redesigned sidebar sections */
+.sidebar-section {
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-section-header {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    padding: 0 0.75rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+}
+
+/* Improved action buttons */
+.action-btn {
+    position: relative;
+    border-radius: 0.375rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+}
+
+.action-btn:hover {
+    background-color: #f1f5f9;
+    transform: translateY(-1px);
+    color: #334155;
+}
+
+.action-btn:active {
+    transform: translateY(0);
+}
+
+.action-btn:focus {
+    outline: none;
+    ring: 2px;
+    ring-offset: 2px;
+    ring-color: #3b82f6;
+}
+
+.action-btn.primary {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.action-btn.primary:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+.action-btn.danger {
+    background-color: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+.action-btn.danger:hover {
+    background-color: #dc2626;
+    border-color: #dc2626;
+}
+
+/* Content area with improved styling */
+.content-area {
+    transition: margin-left 0.3s ease;
+    background-color: #f8fafc;
+    min-height: 100vh;
+}
+
+/* Updated search and filter inputs */
+.search-input {
+    border-radius: 0.375rem;
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 0.75rem;
+    padding-left: 2.5rem;
+    width: 100%;
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+.search-input:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+/* Fix for pagination */
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: 0.375rem;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not([disabled]) {
+    background-color: #f1f5f9;
+    color: #334155;
+}
+
+.pagination-btn.active {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.pagination-btn.active:hover {
+    background-color: #2563eb;
+}
+
+/* Filter dropdown styling */
+.filter-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.25rem;
+    background-color: white;
+    border-radius: 0.375rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    z-index: 50;
+    overflow: hidden;
+}
+
+/* Enhance filter options to ensure they're clickable */
+.filter-option {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: #334155;
+    display: block;
+    width: 100%;
+    font-size: 0.875rem;
+    text-align: left;
+    user-select: none; /* Prevent text selection */
+    font-weight: normal;
+    line-height: 1.5;
+    position: relative;
+    z-index: 60; /* Ensure it's above other elements */
+}
+
+.filter-option:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.filter-option:active {
+    background-color: #e2e8f0;
+}
+
+/* Dark mode styles */
+.dark-mode .filter-option {
+    color: #f1f5f9;
+}
+
+.dark-mode .filter-option:hover {
+    background-color: #334155;
+    color: #ffffff;
+}
+
+.dark-mode .filter-option:active {
+    background-color: #475569;
+}
+
+/* Additional improvements */
+.tooltip {
+    z-index: 50;
+    pointer-events: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1e293b transparent transparent transparent;
+}
+
+/* Number input styling */
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+    transition: all 0.3s ease;
+}
+
+/* Hide spinner buttons in Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"]:focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Add CSS for pagination buttons */
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: 0.375rem;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not([disabled]) {
+    background-color: #e5e7eb;
+}
+
+.pagination-btn.bg-blue-600 {
+    color: white;
+}
+
+.pagination-btn.bg-blue-600:hover {
+    background-color: #2563eb;
+}
+
+/* Suggestions styling */
+#suggestionsContainer {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+/* Scrollbar styling for suggestions */
+#suggestionsContainer::-webkit-scrollbar {
+    width: 6px;
+}
+
+#suggestionsContainer::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+#suggestionsContainer::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+}
+
+/* Input styles for page size input */
+input[type="number"].w-20 {
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+}
+
+input[type="number"].w-20:focus {
+    transform: translateY(-1px);
+}
+
+/* Search button styles */
+#searchButton {
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#searchButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+#searchButton:active {
+    transform: translateY(0);
+}
+
+/* Clear button styles */
+#clearSearchBtn {
+    transition: all 0.15s ease;
+}
+
+#clearSearchBtn:hover i {
+    color: #ef4444;
+}
+
+.exact-match-highlight {
+    background-color: #fef9c3 !important; /* Light yellow background for better visibility */
+}
+
+.exact-match-highlight td {
+    font-weight: 600; /* Slightly bolder text */
+}
+
+/* Project styles */
+.project-file-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.625rem 0.75rem !important;
+    background-color: rgba(59, 130, 246, 0.1) !important; /* Light blue background */
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.375rem !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 0.875rem !important;
+    color: #334155 !important;
+}
+
+.dark-mode .project-file-item {
+    background-color: rgba(59, 130, 246, 0.2) !important; /* Slightly brighter blue for dark mode */
+    border-color: #334155 !important;
+    color: #f1f5f9 !important;
+}
+
+.project-file-item:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.dark-mode .project-file-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.project-file-item.active {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.dark-mode .project-file-item.active {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.project-file-item i {
+    margin-right: 0.5rem;
+    color: var(--light-text-secondary);
+}
+
+.dark-mode .project-file-item i {
+    color: var(--dark-text-secondary);
+}
+
+/* Fix for import button visibility */
+#import-file-btn {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border: 1px solid #bfdbfe !important;
+    color: #2563eb !important;
+    transition: all 0.2s ease !important;
+}
+
+.dark-mode #import-file-btn {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    border-color: #3b82f6 !important;
+    color: #60a5fa !important;
+}
+
+#import-file-btn:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.dark-mode #import-file-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Table header sticky improvements */
+.table-header {
+    position: sticky !important;
+    top: 0 !important;
+    background: var(--light-surface) !important;
+    z-index: 20 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+    border-bottom: 1px solid var(--light-border) !important;
+}
+
+.dark-mode .table-header {
+    background-color: var(--dark-surface) !important;
+    border-bottom: 1px solid var(--dark-border) !important;
+}
+
+.dark-mode .table-header th,
+.dark-mode td {
+    color: var(--dark-text) !important;
+}
+
+/* Dark mode text improvements */
+.dark-mode .text-slate-700,
+.dark-mode .text-slate-900,
+.dark-mode .text-slate-800,
+.dark-mode .sortable,
+.dark-mode .font-medium {
+    color: var(--dark-text) !important;
+}
+
+.dark-mode .text-slate-500,
+.dark-mode .text-slate-600 {
+    color: var(--dark-text-secondary) !important;
+}
+
+/* Checkbox alignment fix */
+.col-checkbox {
+    width: 48px !important;
+    max-width: 48px !important;
+    min-width: 48px !important;
+    padding: 0.5rem !important;
+    text-align: center !important;
+}
+
+/* Column spacing adjustments - main table */
+.col-keyword {
+    width: auto;
+    min-width: 200px;
+    max-width: 40%;
+    padding-right: 2.5rem !important;
+}
+
+.col-volume {
+    width: 130px !important;
+    max-width: 130px !important;
+    min-width: 130px !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    text-align: center !important;
+}
+
+.col-value, .col-kd {
+    width: 150px !important;
+    max-width: 150px !important;
+    min-width: 150px !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    text-align: center !important;
+}
+
+/* Action column in saved keywords */
+.col-action {
+    width: 100px !important;
+    max-width: 100px !important;
+    min-width: 100px !important;
+    text-align: center !important;
+}
+
+/* Fix import file visibility */
+#project-file-list {
+    background-color: rgba(59, 130, 246, 0.05) !important; /* Light blue background */
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.375rem !important;
+    margin-top: 0.5rem !important;
+    padding: 0.5rem !important;
+    min-height: 40px !important;
+}
+
+.dark-mode #project-file-list {
+    background-color: rgba(59, 130, 246, 0.1) !important; /* Slightly more blue for dark mode */
+    border-color: #334155 !important;
+}
+
+/* Strong Fix for checkbox alignment */
+input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 auto !important;
+    display: block !important;
+    cursor: pointer !important;
+}
+
+/* Strong fix for table headers */
+.table-header {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    background-color: #ffffff !important;
+}
+
+.dark-mode .table-header {
+    background-color: #1e293b !important;
+}
+
+.table-header th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+}
+
+/* Fix column alignment and positioning */
+.table-compact th, 
+.table-compact td {
+    vertical-align: middle !important;
+}
+
+/* Force column spacing */
+.table-compact th:nth-child(3),
+.table-compact td:nth-child(3),
+.table-compact th:nth-child(4),
+.table-compact td:nth-child(4) {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    text-align: center !important;
+}
+
+/* Volume badge improvements */
+.volume-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+/* General spacing between columns */
+table th, table td {
+    padding: 0.625rem 0.75rem !important;
+    text-align: center !important;
+}
+
+/* Make N/A and Low text more visible in dark mode */
+.dark-mode td:nth-child(3),
+.dark-mode td:nth-child(4) {
+    color: #e2e8f0 !important;
+}
+
+/* Ensure dark mode toggle is always visible */
+.dark-mode-toggle {
+    position: fixed !important;
+    bottom: 1.5rem !important;
+    right: 1.5rem !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #3b82f6 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+    cursor: pointer !important;
+    z-index: 9999 !important;
+    transition: all 0.2s ease !important;
+}
+
+.dark-mode .dark-mode-toggle {
+    background-color: #60a5fa !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 240px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        z-index: 50;
+        background: #ffffff;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .content-area {
+        margin-left: 0 !important;
+    }
+    
+    /* Make tables scrollable on mobile */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Adjust column widths for mobile */
+    .col-checkbox {
+        width: 30px !important;
+        max-width: 30px !important;
+    }
+    
+    .col-keyword {
+        min-width: 180px;
+    }
+    
+    .col-volume, .col-value {
+        min-width: 110px;
+    }
+    
+    /* Adjust search and filter layout for mobile */
+    .search-input {
+        font-size: 0.875rem;
+    }
+}
+
+/* Additional mobile adjustments for the smallest screens */
+@media (max-width: 480px) {
+    /* Stack filter and search elements on very small screens */
+    .search-section-mobile-stack {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    /* Reduce padding to save space */
+    .table-compact th,
+    .table-compact td {
+        padding: 0.4rem 0.35rem;
+    }
+    
+    /* Make action buttons smaller */
+    .action-btn {
+        width: 2rem;
+        height: 2rem;
+    }
+    
+    /* Adjust page size input */
+    #main-page-size-input {
+        width: 50px;
+    }
+}
+
+/* Fixed header for mobile scrolling */
+@media (max-width: 768px) {
+    .table-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+}
+
+/* Touch-friendly adjustments */
+@media (hover: none) {
+    /* Make buttons larger for touch */
+    .action-btn, 
+    .pagination-btn {
+        min-height: 40px;
+        min-width: 40px;
+    }
+    
+    /* Larger checkbox for touch */
+    input[type="checkbox"] {
+        min-width: 16px;
+        min-height: 16px;
+    }
+}
+
+/* Dark mode support for future use */
+@media (prefers-color-scheme: dark) {
+    /* We'll keep these commented out until full dark mode is implemented
+    .table-container {
+        background-color: #1e293b;
+        border-color: #334155;
+    }
+    
+    .table-header {
+        background-color: #0f172a;
+    }
+    
+    .table-row {
+        border-color: #334155;
+    }
+    
+    .table-row:hover {
+        background-color: #1e293b !important;
+    }
+    */
+}
+
+/* Print styles for better exporting */
+@media print {
+    .sidebar,
+    .action-btn,
+    #main-volume-filter-btn,
+    .pagination-btn,
+    #searchInput,
+    #searchButton,
+    #searchTypeSelect,
+    #thresholdInput {
+        display: none !important;
+    }
+    
+    .content-area {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .table-container {
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+    }
+    
+    /* Print in landscape by default */
+    @page {
+        size: landscape;
+    }
+}
+
+/* Loading skeletons for better UX during data loading */
+.skeleton {
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 0.25rem;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Helper class for flex gap polyfill */
+.gap-item {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Additional elements for tooltip behavior */
+.tooltip-container {
+    position: relative;
+}
+
+.tooltip-text {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1e293b;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    z-index: 50;
+}
+
+.tooltip-container:hover .tooltip-text {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Dark mode support */
+.dark-mode {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+.dark-mode .sidebar {
+    background-color: var(--dark-surface);
+    border-right-color: var(--dark-border);
+}
+
+.dark-mode .table-container {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+.dark-mode .table-header {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+.dark-mode .table-header th {
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .table-row {
+    border-color: var(--dark-border);
+}
+
+.dark-mode .table-row:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark-mode .table-row.bg-white {
+    background-color: var(--dark-surface) !important;
+}
+
+.dark-mode .table-row.bg-slate-50 {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+.dark-mode .search-input,
+.dark-mode select,
+.dark-mode input[type="number"] {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text);
+}
+
+.dark-mode .search-input::placeholder {
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .action-btn {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .action-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--dark-text);
+}
+
+.dark-mode .action-btn.primary {
+    background-color: var(--dark-primary);
+    border-color: var(--dark-primary);
+    color: var(--dark-surface);
+}
+
+.dark-mode .pagination-btn {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .pagination-btn.active {
+    background-color: var(--dark-primary);
+    border-color: var(--dark-primary);
+    color: var(--dark-surface);
+}
+
+.dark-mode .sidebar-menu-item {
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .sidebar-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--dark-text);
+}
+
+.dark-mode .sidebar-menu-item.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--dark-text);
+}
+
+.dark-mode .sidebar-section-header {
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .filter-dropdown {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+.dark-mode .filter-option {
+    color: var(--dark-text);
+}
+
+.dark-mode .filter-option:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .filter-option.active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fix Project Name visibility */
+.project-name {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.dark-mode .project-name {
+    color: #f1f5f9;
+}
+
+/* Fix for the marked section (Currently viewing, search bar, etc.) to be sticky when scrolling */
+.main-header-section {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background-color: var(--light-bg) !important;
+    padding: 1rem !important;
+    border-bottom: 1px solid var(--light-border) !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.dark-mode .main-header-section {
+    background-color: var(--dark-bg) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* Currently viewing section styles */
+.currently-viewing {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 1rem !important;
+}
+
+/* Make keyword column text clearly visible in dark mode */
+.dark-mode td.text-sm.font-medium.text-slate-900 {
+    color: #f1f5f9 !important;
+}
+
+/* Volume and value columns fixed in dark mode */
+.dark-mode .volume-badge {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    color: #f1f5f9 !important;
+}
+
+.dark-mode td:nth-child(3),
+.dark-mode td:nth-child(4) {
+    color: #f1f5f9 !important;
+}
+
+/* Make import file text blue like saved keywords */
+#import-file-btn {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border: 1px solid #bfdbfe !important;
+    color: #2563eb !important;
+    transition: all 0.2s ease !important;
+}
+
+.dark-mode #import-file-btn {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    border-color: #3b82f6 !important;
+    color: #60a5fa !important;
+}
+
+/* Strong fix for dark mode text */
+.dark-mode .text-slate-700, 
+.dark-mode .text-slate-800, 
+.dark-mode .text-slate-900,
+.dark-mode .text-indigo-700,
+.dark-mode .text-indigo-600,
+.dark-mode td, 
+.dark-mode th,
+.dark-mode label,
+.dark-mode p,
+.dark-mode span:not(.volume-badge *) {
+    color: #f1f5f9 !important;
+}
+
+.dark-mode .text-slate-500,
+.dark-mode .text-slate-600 {
+    color: #cbd5e1 !important;
+}
+
+/* Dark mode toggle button - fixed to ensure it works */
+.dark-mode-toggle {
+    position: fixed !important;
+    bottom: 1.5rem !important;
+    right: 1.5rem !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #3b82f6 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+    cursor: pointer !important;
+    z-index: 9999 !important;
+    transition: all 0.2s ease !important;
+}
+
+.dark-mode .dark-mode-toggle {
+    background-color: #60a5fa !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+}
+
+/* Fix alignment of columns in all tables */
+table th, table td {
+    padding: 0.625rem 0.75rem !important;
+    text-align: center !important;
+}
+
+th[data-sort="keyword"], td.text-sm.font-medium.text-slate-900 {
+    text-align: left !important;
+}
+
+/* Make imported files look like saved keywords with light blue bg */
+#project-file-list {
+    background-color: rgba(59, 130, 246, 0.05) !important; /* Light blue background */
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.375rem !important;
+    margin-top: 0.5rem !important;
+    padding: 0.5rem !important;
+    min-height: 40px !important;
+}
+
+.dark-mode #project-file-list {
+    background-color: rgba(59, 130, 246, 0.1) !important; /* Slightly more blue for dark mode */
+    border-color: #334155 !important;
+}
+
+/* Strong fix for dark mode text */
+.dark-mode .text-slate-700, 
+.dark-mode .text-slate-800, 
+.dark-mode .text-slate-900,
+.dark-mode .text-indigo-700,
+.dark-mode .text-indigo-600,
+.dark-mode td, 
+.dark-mode th,
+.dark-mode label,
+.dark-mode p,
+.dark-mode span:not(.volume-badge *) {
+    color: #f1f5f9 !important;
+}
+
+.dark-mode .text-slate-500,
+.dark-mode .text-slate-600 {
+    color: #cbd5e1 !important;
+}
+
+/* Special column alignment for saved keywords table */
+#savedKeywordsTableBody td:last-child {
+    text-align: center !important;
+    padding-right: 1rem !important;
+}
+
+/* Better alignment for saved keywords KD and action column */
+#savedKeywordsTableBody td:nth-child(4) {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    text-align: center !important;
+}
+
+#savedKeywordsTableBody td:nth-child(5) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    text-align: center !important;
+}
+
+/* Fix saved keywords table header alignment */
+#active-list-content .table-header th:nth-child(4) {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    text-align: center !important;
+}
+
+#active-list-content .table-header th:nth-child(5) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    text-align: center !important;
+}
+
+/* Increase specificity for the sticky section in saved keywords view */
+#active-list-content .sticky-header-container {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 30 !important;
+    background: var(--light-bg) !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    border-bottom: 1px solid var(--light-border) !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.dark-mode #active-list-content .sticky-header-container {
+    background: var(--dark-bg) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* Better alignment for KD column in both main and saved keywords tables */
+.col-value, .col-kd {
+    width: 150px !important;
+    max-width: 150px !important;
+    min-width: 150px !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    text-align: center !important;
+}
+
+/* Center align all KD/value cells */
+td:nth-child(4) {
+    text-align: center !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}
+
+/* Fix for saved keywords KD column and values */
+#savedKeywordsTableBody td:nth-child(4) {
+    text-align: center !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    vertical-align: middle !important;
+}
+
+/* Fix for the highlighted background in Create New List modal */
+#create-list-modal, #save-to-list-modal, #rename-list-modal, #delete-list-modal {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Fix dark mode toggle button with stronger rules */
+.dark-mode-toggle {
+    position: fixed !important;
+    bottom: 1.5rem !important;
+    right: 1.5rem !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #3b82f6 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+    cursor: pointer !important;
+    z-index: 9999 !important;
+    transition: all 0.2s ease !important;
+}
+
+.dark-mode .dark-mode-toggle {
+    background-color: #60a5fa !important;
+    color: #ffffff !important;
+    border-color: #3b82f6 !important;
+}
+
+/* Fix alignment of columns in all tables */
+table th, table td {
+    padding: 0.625rem 0.75rem !important;
+    text-align: center !important;
+}
+
+th[data-sort="keyword"], td.text-sm.font-medium.text-slate-900 {
+    text-align: left !important;
+}
+
+/* Make imported files look like saved keywords with light blue bg */
+#project-file-list {
+    background-color: rgba(59, 130, 246, 0.05) !important; /* Light blue background */
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.375rem !important;
+    margin-top: 0.5rem !important;
+    padding: 0.5rem !important;
+    min-height: 40px !important;
+}
+
+.dark-mode #project-file-list {
+    background-color: rgba(59, 130, 246, 0.1) !important; /* Slightly more blue for dark mode */
+    border-color: #334155 !important;
+}
+
+/* Strong fix for dark mode text */
+.dark-mode .text-slate-700, 
+.dark-mode .text-slate-800, 
+.dark-mode .text-slate-900,
+.dark-mode .text-indigo-700,
+.dark-mode .text-indigo-600,
+.dark-mode td, 
+.dark-mode th,
+.dark-mode label,
+.dark-mode p,
+.dark-mode span:not(.volume-badge *) {
+    color: #f1f5f9 !important;
+}
+
+.dark-mode .text-slate-500,
+.dark-mode .text-slate-600 {
+    color: #cbd5e1 !important;
+}
+
+/* Special column alignment for saved keywords table */
+#savedKeywordsTableBody td:nth-child(4) {
+    text-align: center !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    vertical-align: middle !important;
+}
+
+/* Better alignment for saved keywords KD and action column */
+#savedKeywordsTableBody td:nth-child(5) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    text-align: center !important;
+}
+
+/* Fix saved keywords table header alignment */
+#active-list-content .table-header th:nth-child(4) {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    text-align: center !important;
+}
+
+#active-list-content .table-header th:nth-child(5) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    text-align: center !important;
+}
+
+/* Increase specificity for the sticky section in saved keywords view */
+#active-list-content .sticky-header-container {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 30 !important;
+    background: var(--light-bg) !important;
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    border-bottom: 1px solid var(--light-border) !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.dark-mode #active-list-content .sticky-header-container {
+    background: var(--dark-bg) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* Fix KD column header alignment in saved keywords table */
+#active-list-content th[data-sort="value"] {
+    text-align: center !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    position: relative !important;
+}
+
+#active-list-content th[data-sort="value"] span {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#active-list-content th[data-sort="value"] span i {
+    margin-left: 8px !important;
+    display: inline-block !important;
+    visibility: visible !important;
+}
+
+/* Ensure "Low" values are centered in KD column */
+#savedKeywordsTableBody td:nth-child(4) {
+    text-align: center !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    vertical-align: middle !important;
+    font-weight: 500 !important;
+}
+
+/* Ensure KD column header width matches the width of its values */
+th[data-sort="value"], td:nth-child(4) {
+    width: 130px !important;
+    min-width: 130px !important;
+    max-width: 130px !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    text-align: center !important;
+}
+
+/* Additional alignment fix for saved keywords KD column and its values */
+.table-compact th[data-sort="value"], 
+.table-compact td:nth-child(4) {
+    text-align: center !important;
+    padding: 0.625rem 1.5rem !important;
+}
+
+/* Apply specific styling for the sort icon */
+th[data-sort="value"] i.fas {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-left: 8px !important;
+}
+
+/* Fix for modals to prevent background highlighting */
+#rename-project-modal,
+#create-project-modal,
+#save-to-list-modal,
+#delete-list-modal,
+#file-import-modal {
+    background-color: transparent !important;
+}
+
+#rename-project-modal > .absolute,
+#create-project-modal > .absolute {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Ensure modal content has proper z-index and appears above overlay */
+#rename-project-modal .relative,
+#create-project-modal .relative {
+    z-index: 10 !important;
+}
+
+/* Fix for button hover states in modals */
+#rename-project-modal button:hover,
+#create-project-modal button:hover {
+    opacity: 0.9 !important;
+}
+
+/* Fix for input focus in modals */
+#rename-project-modal input:focus,
+#create-project-modal input:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Fix for the filter dropdown in the saved keywords list */
+#volume-filter-dropdown {
+    position: absolute !important;
+    width: 150px !important;
+    z-index: 9200 !important;
+    right: 0 !important;
+    top: 100% !important;
+    background-color: white !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    margin-top: 0.25rem !important;
+    overflow: hidden !important;
+}
+
+.dark-mode #volume-filter-dropdown {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+#volume-filter-dropdown .filter-option {
+    display: block !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    color: #334155 !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease !important;
+}
+
+.dark-mode #volume-filter-dropdown .filter-option {
+    color: #f1f5f9 !important;
+}
+
+#volume-filter-dropdown .filter-option:hover {
+    background-color: #f1f5f9 !important;
+}
+
+.dark-mode #volume-filter-dropdown .filter-option:hover {
+    background-color: #334155 !important;
+}
+
+/* Enhanced dark mode toggle button to ensure it works */
+.dark-mode-toggle {
+    position: fixed !important;
+    bottom: 1.5rem !important;
+    right: 1.5rem !important;
+    width: 3rem !important;
+    height: 3rem !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: #3b82f6 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+    cursor: pointer !important;
+    z-index: 9999 !important;
+    transition: all 0.2s ease !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.dark-mode .dark-mode-toggle {
+    background-color: #60a5fa !important;
+    color: #ffffff !important;
+}
+
+/* Fix highlighting issues on all modal buttons and create new list button */
+button {
+    position: relative;
+    z-index: 1;
+}
+
+/* Fix button highlight issue by changing their background color on modal display */
+#create-project-modal,
+#rename-project-modal,
+#create-list-modal,
+#save-to-list-modal,
+#rename-list-modal,
+#delete-list-modal,
+#file-import-modal {
+    position: fixed !important;
+    z-index: 9900 !important;
+    background: none !important;
+}
+
+#create-project-modal > .absolute,
+#rename-project-modal > .absolute,
+#create-list-modal .absolute,
+#save-to-list-modal .absolute,
+#rename-list-modal .absolute,
+#delete-list-modal .absolute,
+#file-import-modal .absolute {
+    position: fixed !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 9910 !important;
+}
+
+/* Create New List button fix */
+#create-new-list,
+#create-project-btn,
+#rename-project-btn {
+    background-color: transparent !important;
+    position: relative !important;
+    z-index: 5 !important;
+}
+
+#create-new-list:hover,
+#create-project-btn:hover,
+#rename-project-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Volume filter dropdown improvements */
+#volume-filter-dropdown,
+#main-volume-filter-dropdown {
+    position: absolute !important;
+    width: 150px !important;
+    z-index: 9200 !important;
+    right: 0 !important;
+    top: 100% !important;
+    background-color: white !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    margin-top: 0.25rem !important;
+    overflow: hidden !important;
+    display: none !important; /* Hidden by default */
+}
+
+/* When not hidden, ensure it's displayed as a block */
+#volume-filter-dropdown:not(.hidden),
+#main-volume-filter-dropdown:not(.hidden) {
+    display: block !important;
+}
+
+/* Fix for dark mode text color reset when switching back to light mode */
+body:not(.dark-mode) th, 
+body:not(.dark-mode) td,
+body:not(.dark-mode) .text-slate-700, 
+body:not(.dark-mode) .text-slate-800, 
+body:not(.dark-mode) .text-slate-900,
+body:not(.dark-mode) .text-indigo-700,
+body:not(.dark-mode) .text-indigo-600,
+body:not(.dark-mode) span:not(.volume-badge *),
+body:not(.dark-mode) p,
+body:not(.dark-mode) label {
+    color: initial !important;
+}
+
+body:not(.dark-mode) td.text-sm.font-medium.text-slate-900 {
+    color: #1e293b !important; /* Slate 900 color for light mode */
+}
+
+/* Ensure all modals have the same structure for their overlays */
+.modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 9910 !important;
+}
+
+/* Add these CSS rules to fix modal and dropdown issues */
+
+/* Fix for modals - ensure proper z-index and visibility */
+#create-project-modal,
+#rename-project-modal,
+#file-import-modal {
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Fix for modal containers */
+.modal-container {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Fix for volume filter dropdowns */
+#main-volume-filter-dropdown,
+#volume-filter-dropdown,
+#all-volumes-dropdown {
+    position: absolute;
+    z-index: 50;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    width: max-content;
+    min-width: 160px;
+    margin-top: 0.25rem;
+    right: 0;
+}
+
+/* Fix for filter options */
+.filter-option,
+.volume-option {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.875rem;
+    color: #334155;
+}
+
+.filter-option:hover,
+.volume-option:hover {
+    background-color: #f1f5f9;
+}
+
+/* Ensure modal buttons are clickable */
+#confirm-create-project,
+#cancel-create-project,
+#confirm-rename-project,
+#cancel-rename-project,
+#confirm-import-file,
+#cancel-import-file {
+    cursor: pointer;
+    position: relative;
+    z-index: 60;
+}
+
+/* Fix dark mode for modals */
+.dark-mode #create-project-modal .bg-white,
+.dark-mode #rename-project-modal .bg-white,
+.dark-mode #file-import-modal .bg-white {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
+.dark-mode .filter-option,
+.dark-mode .volume-option {
+    color: #f1f5f9;
+}
+
+.dark-mode #main-volume-filter-dropdown,
+.dark-mode #volume-filter-dropdown,
+.dark-mode #all-volumes-dropdown {
+    background-color: #334155;
+    border-color: #475569;
+}
+
+.dark-mode .filter-option:hover,
+.dark-mode .volume-option:hover {
+    background-color: #475569;
+}
+
+/* Make sure file import modal is always visible */
+#file-import-modal.flex {
+    display: flex !important;
+}
+
+/* Fix for file import modal */
+#file-import-modal {
+    z-index: 9999 !important;
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+#file-import-modal.hidden {
+    display: none !important;
+}
+
+#file-import-modal .bg-white {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    position: relative;
+    z-index: 10000;
+}
+
+/* Make modal buttons more prominent and clickable */
+#cancel-import-file,
+#confirm-import-file {
+    cursor: pointer;
+    position: relative;
+    z-index: 10001;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+#cancel-import-file:hover {
+    background-color: #f8fafc;
+}
+
+#confirm-import-file:hover {
+    background-color: #4338ca;
+}
+
+/* Fix for dark mode */
+.dark-mode #file-import-modal .bg-white {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+
+.dark-mode #file-import-modal .text-slate-800 {
+    color: #f1f5f9 !important;
+}
+
+.dark-mode #file-import-modal .text-slate-700,
+.dark-mode #file-import-modal .text-slate-600 {
+    color: #cbd5e1 !important;
+}
+
+.dark-mode #file-import-modal input {
+    background-color: #334155;
+    border-color: #475569;
+    color: #f1f5f9;
+}
+
+.dark-mode #cancel-import-file {
+    background-color: #334155;
+    border-color: #475569;
+    color: #f1f5f9;
+}
+
+.dark-mode #cancel-import-file:hover {
+    background-color: #475569;
+}
+
+/* Fixed volume filter dropdown styles */
+#main-volume-filter-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: auto;
+    min-width: 150px;
+    background-color: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    margin-top: 5px;
+    z-index: 50;
+    padding: 5px 0;
+    overflow: hidden;
+}
+
+#main-volume-filter-dropdown:not(.hidden) {
+    display: block !important;
+}
+
+#main-volume-filter-dropdown .filter-option {
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-size: 0.875rem;
+    color: #334155;
+    display: block;
+    width: 100%;
+    text-align: left;
+}
+
+#main-volume-filter-dropdown .filter-option:hover {
+    background-color: #f1f5f9;
+}
+
+.dark-mode #main-volume-filter-dropdown {
+    background-color: #1e293b;
+    border-color: #475569;
+}
+
+.dark-mode #main-volume-filter-dropdown .filter-option {
+    color: #f1f5f9;
+}
+
+.dark-mode #main-volume-filter-dropdown .filter-option:hover {
+    background-color: #334155;
+}

@@ -1,0 +1,90 @@
+<div id="saved-keywords-container" class="border rounded-lg shadow-sm p-4 mt-6">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">Saved Keywords</h2>
+        <button id="add-list-btn" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm flex items-center">
+            <i class="fas fa-plus mr-1"></i> Add List
+        </button>
+    </div>
+
+    <div class="flex mb-4">
+        <div class="w-1/4 border-r pr-4">
+            <h3 class="text-lg font-medium mb-3">Lists</h3>
+            <ul id="saved-keyword-lists" class="space-y-2">
+                <!-- Lists will be populated here -->
+                <li class="text-gray-500 italic">No saved lists</li>
+            </ul>
+        </div>
+        <div class="w-3/4 pl-4">
+            <div id="no-list-selected" class="text-center py-10 text-gray-500">
+                <i class="fas fa-list-ul text-4xl mb-2"></i>
+                <p>Select or create a list to view saved keywords</p>
+            </div>
+            <div id="list-content" class="hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="active-list-name" class="text-lg font-medium"></h3>
+                    <div class="flex space-x-2">
+                        <button id="edit-list-btn" class="px-2 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button id="delete-list-btn" class="px-2 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                        <button id="export-list-btn" class="px-2 py-1 border border-gray-300 rounded text-sm hover:bg-gray-100">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+                <div id="keywords-container">
+                    <div id="no-keywords" class="text-center py-10 text-gray-500 hidden">
+                        <p>No keywords saved in this list</p>
+                    </div>
+                    <div class="table-container bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden">
+                        <table class="min-w-full table-compact border-collapse">
+                            <colgroup>
+                                <col class="col-checkbox">
+                                <col class="col-keyword">
+                                <col class="col-volume">
+                                <col class="col-value">
+                                <col class="col-action">
+                            </colgroup>
+                            <thead class="table-header">
+                                <tr>
+                                    <th class="text-center">
+                                        <div class="flex items-center justify-center">
+                                            <input type="checkbox" id="selectAllSaved"
+                                                class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                        </div>
+                                    </th>
+                                    <th class="text-left cursor-pointer" data-sort="keyword">
+                                        <span class="flex items-center">
+                                            <span class="font-semibold text-slate-700">Keyword</span>
+                                            <i class="fas fa-sort ml-2 text-slate-400 text-xs"></i>
+                                        </span>
+                                    </th>
+                                    <th class="text-left cursor-pointer" data-sort="volume">
+                                        <span class="flex items-center">
+                                            <span class="font-semibold text-slate-700">Volume</span>
+                                            <i class="fas fa-sort ml-2 text-slate-400 text-xs"></i>
+                                        </span>
+                                    </th>
+                                    <th class="text-left cursor-pointer" data-sort="value">
+                                        <span class="flex items-center">
+                                            <span class="font-semibold text-slate-700">Value</span>
+                                            <i class="fas fa-sort ml-2 text-slate-400 text-xs"></i>
+                                        </span>
+                                    </th>
+                                    <th class="text-center">
+                                        <span class="font-semibold text-slate-700">Action</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="savedKeywordsTableBody">
+                                <!-- SAVED KEYWORDS: Saved keywords will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
