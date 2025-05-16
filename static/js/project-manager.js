@@ -555,6 +555,11 @@ class ProjectManager {
                 this.loadFile(fileId);
                 console.log('File loaded successfully');
                 this.showNotification(`File "${displayName}" imported successfully`, 'success');
+                
+                // Fix Volume and KD column alignment
+                setTimeout(() => {
+                    this.fixImportedTableColumnAlignment();
+                }, 100);
             } catch (loadError) {
                 console.error('Error loading file:', loadError);
                 
@@ -1188,10 +1193,15 @@ class ProjectManager {
         // Update the UI with the imported data
         this.updateTableWithImportedData(fileName, headers, data, sheetInfo);
         
-        // Apply additional fixes to ensure the table structure matches the main table
+        // Fix styling for imported table columns
         if (this.fixImportedTableStyles) {
-            setTimeout(() => this.fixImportedTableStyles(), 100); // Brief delay to ensure DOM is updated
+            this.fixImportedTableStyles();
         }
+        
+        // Fix Volume and KD column alignment
+        setTimeout(() => {
+            this.fixImportedTableColumnAlignment();
+        }, 100);
     }
     
     updateTableWithImportedData(fileName, headers, data, sheetInfo = null) {
@@ -1277,6 +1287,11 @@ class ProjectManager {
         
         // Make sure KD column is properly styled
         this.fixImportedTableStyles();
+        
+        // Fix column alignments
+        setTimeout(() => {
+            this.fixImportedTableColumnAlignment();
+        }, 50);
     }
     
     // Add a new method to fix table styles after import
@@ -1768,6 +1783,11 @@ class ProjectManager {
                 if (this.fixImportedTableStyles) {
                     this.fixImportedTableStyles();
                 }
+                
+                // Fix column alignments
+                setTimeout(() => {
+                    this.fixImportedTableColumnAlignment();
+                }, 50);
             });
         });
     }
@@ -2047,10 +2067,10 @@ class ProjectManager {
         if (window.updateSelectedCount) window.updateSelectedCount();
         if (window.updateSelectAllCheckboxState) window.updateSelectAllCheckboxState();
         
-        // Fix styling for imported table columns
-        if (this.fixImportedTableStyles) {
-            this.fixImportedTableStyles();
-        }
+        // Fix alignment for Volume and KD columns in imported file
+        setTimeout(() => {
+            this.fixImportedTableColumnAlignment();
+        }, 100); // Small delay to ensure DOM is updated
     }
     
     attachPaginationEventListeners(data, currentPage) {
@@ -2384,6 +2404,11 @@ class ProjectManager {
         this.currentImportedData.filteredData = filteredData;
         this.displayImportedDataPage(filteredData, 1);
         this.setupImportedDataPagination(filteredData);
+        
+        // Fix column alignments
+        setTimeout(() => {
+            this.fixImportedTableColumnAlignment();
+        }, 50);
     }
     
     // Setup export and copy functionality
@@ -2878,6 +2903,11 @@ class ProjectManager {
         
         // Update pagination
         this.setupImportedDataPagination(filteredData);
+        
+        // Fix column alignments
+        setTimeout(() => {
+            this.fixImportedTableColumnAlignment();
+        }, 50);
     }
 
     renameProject() {
@@ -2919,5 +2949,38 @@ class ProjectManager {
                 }
             }
         }, 1000); // Check every second
+    }
+
+    // Add this function after the constructor or before updateTableWithImportedData method
+    fixImportedTableColumnAlignment() {
+        // Fix Volume column (3rd column) alignment
+        document.querySelectorAll('#keywordsTableBody td:nth-child(3)').forEach(cell => {
+            cell.style.textAlign = 'center';
+            cell.style.verticalAlign = 'middle';
+            
+            // Center any content inside
+            const spans = cell.querySelectorAll('span');
+            spans.forEach(span => {
+                span.style.margin = '0 auto';
+                span.style.display = 'inline-block'; 
+                span.style.textAlign = 'center';
+                span.style.width = '100%';
+            });
+        });
+        
+        // Fix KD column (4th column) alignment
+        document.querySelectorAll('#keywordsTableBody td:nth-child(4)').forEach(cell => {
+            cell.style.textAlign = 'center';
+            cell.style.verticalAlign = 'middle';
+            
+            // Center any content inside
+            const spans = cell.querySelectorAll('span');
+            spans.forEach(span => {
+                span.style.margin = '0 auto';
+                span.style.display = 'inline-block';
+                span.style.textAlign = 'center';
+                span.style.width = '100%';
+            });
+        });
     }
 } 

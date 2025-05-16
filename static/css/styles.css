@@ -2285,3 +2285,43 @@ td:nth-child(3) {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
+
+/* Fix for Volume and KD alignment in imported file table */
+#keywordsTableBody td:nth-child(3),  /* Volume column */
+#keywordsTableBody td:nth-child(4) { /* KD column */
+  text-align: center !important;
+  display: table-cell !important;
+  vertical-align: middle !important;
+}
+
+/* Make sure both N/A and 1M-10M values are centered */
+#keywordsTableBody td:nth-child(3) span,
+#keywordsTableBody td:nth-child(3) .volume-badge {
+  margin: 0 auto !important;
+  display: inline-block !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+/* Make sure "Low" values in KD column are centered */
+#keywordsTableBody td:nth-child(4) span {
+  margin: 0 auto !important;
+  display: inline-block !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+/* Volume and KD specific styling for imported data */
+th[data-sort="volume"] + *,  /* Volume column cells */
+th[data-sort="kd"] + *,      /* KD column cells */
+th[data-sort="value"] + * {  /* Value column cells (appears as KD) */
+  text-align: center !important;
+}
+
+/* Fix for any inline-flex elements in these columns */
+td:nth-child(3) .inline-flex,
+td:nth-child(4) .inline-flex {
+  justify-content: center !important;
+  margin: 0 auto !important;
+  display: inline-flex !important;
+}
