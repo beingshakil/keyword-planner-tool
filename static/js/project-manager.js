@@ -45,8 +45,12 @@ class ProjectManager {
 
         this.fileData = null;
         this.currentFile = null;
+        this.currentImportedData = null;
 
         this.init();
+        
+        // Setup periodic table style fixer
+        this.setupTableStyleFixer();
     }
 
     init() {
@@ -1183,6 +1187,11 @@ class ProjectManager {
         
         // Update the UI with the imported data
         this.updateTableWithImportedData(fileName, headers, data, sheetInfo);
+        
+        // Apply additional fixes to ensure the table structure matches the main table
+        if (this.fixImportedTableStyles) {
+            setTimeout(() => this.fixImportedTableStyles(), 100); // Brief delay to ensure DOM is updated
+        }
     }
     
     updateTableWithImportedData(fileName, headers, data, sheetInfo = null) {
@@ -1216,23 +1225,39 @@ class ProjectManager {
         const tableHeader = document.querySelector('#keywordsTableBody').closest('table').querySelector('thead tr');
         if (!tableHeader) return;
         
+        // Start with the checkbox column
         tableHeader.innerHTML = `
             <th class="py-3 px-4 text-left max-w-[40px]">
-                <div class="flex items-center">
+                <div class="flex items-center justify-center">
                     <input type="checkbox" id="selectAll" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
                 </div>
             </th>
         `;
         
         // Add column headers based on the file
-        headers.forEach(header => {
+        headers.forEach((header, index) => {
             if (!header) return; // Skip empty headers
+            
+            // Determine if this is the Value/KD column
+            const isValueColumn = header.toLowerCase() === 'value' || 
+                                  header.toLowerCase() === 'kd' || 
+                                  header.toLowerCase().includes('difficulty') || 
+                                  header.toLowerCase().includes('kd');
+            
+            // If it's the Value/KD column, always display it as "KD"
+            let displayHeader = header;
+            if (isValueColumn) {
+                displayHeader = "KD";
+            }
+            
+            // Use consistent styling and structure matching the main table
+            const justifyClass = isValueColumn ? 'justify-center' : (header.toLowerCase().includes('volum') ? 'justify-center' : '');
             
             tableHeader.innerHTML += `
                 <th class="py-3 px-4 text-left sortable" data-sort="${header}">
-                    <span class="flex items-center">
-                        <span class="font-semibold text-slate-700">${header}</span>
-                        <i class="fas fa-sort ml-2 text-slate-400"></i>
+                    <span class="flex items-center ${justifyClass}">
+                        <span class="font-semibold text-slate-700">${displayHeader}</span>
+                        <i class="fas fa-sort ml-2 text-slate-400 text-xs"></i>
                     </span>
                 </th>
             `;
@@ -1249,6 +1274,113 @@ class ProjectManager {
         
         // Setup pagination for the imported data
         this.setupImportedDataPagination(data);
+        
+        // Make sure KD column is properly styled
+        this.fixImportedTableStyles();
+    }
+    
+    // Add a new method to fix table styles after import
+    fixImportedTableStyles() {
+        // Add proper column classes to match main table
+        const table = document.querySelector('#keywordsTableBody').closest('table');
+        if (table) {
+            // Check if colgroup exists, if not add it
+            let colgroup = table.querySelector('colgroup');
+            if (!colgroup) {
+                colgroup = document.createElement('colgroup');
+                table.insertBefore(colgroup, table.firstChild);
+            } else {
+                colgroup.innerHTML = ''; // Clear existing columns
+            }
+            
+            // Add checkbox column
+            const checkboxCol = document.createElement('col');
+            checkboxCol.className = 'col-checkbox';
+            colgroup.appendChild(checkboxCol);
+            
+            // Add columns based on header types
+            const headers = this.currentImportedData?.headers || [];
+            headers.forEach(header => {
+                if (!header) return;
+                
+                const col = document.createElement('col');
+                
+                // Determine column type based on header name
+                if (header.toLowerCase().includes('keyword') || 
+                    header.toLowerCase() === 'kw' || 
+                    header.toLowerCase() === 'key' || 
+                    header.toLowerCase() === 'term') {
+                    col.className = 'col-keyword';
+                } else if (header.toLowerCase().includes('volum') || 
+                          header.toLowerCase() === 'vol' || 
+                          header.toLowerCase() === 'search volume') {
+                    col.className = 'col-volume';
+                } else if (header.toLowerCase() === 'value' || 
+                          header.toLowerCase() === 'kd' || 
+                          header.toLowerCase().includes('difficulty')) {
+                    col.className = 'col-kd';
+                } else {
+                    // Default column style
+                    col.style.width = 'auto';
+                }
+                
+                colgroup.appendChild(col);
+            });
+        }
+        
+        // Fix alignment for value/KD column
+        const valueHeaders = document.querySelectorAll('th[data-sort="value"], th[data-sort="kd"], th[data-sort*="difficulty"]');
+        valueHeaders.forEach(header => {
+            if (header) {
+                header.style.textAlign = 'center';
+                
+                // Fix the header text to always be "KD"
+                const textSpan = header.querySelector('span span');
+                if (textSpan && textSpan.textContent !== 'KD') {
+                    textSpan.textContent = 'KD';
+                }
+                
+                // Ensure column styling matches main table
+                const columnSpan = header.querySelector('span');
+                if (columnSpan) {
+                    columnSpan.style.display = 'flex';
+                    columnSpan.style.justifyContent = 'center';
+                    columnSpan.style.alignItems = 'center';
+                }
+            }
+        });
+        
+        // Fix volume column alignment
+        const volumeHeaders = document.querySelectorAll('th[data-sort*="volum"]');
+        volumeHeaders.forEach(header => {
+            if (header) {
+                header.style.textAlign = 'center';
+                
+                const columnSpan = header.querySelector('span');
+                if (columnSpan) {
+                    columnSpan.style.display = 'flex';
+                    columnSpan.style.justifyContent = 'center';
+                    columnSpan.style.alignItems = 'center';
+                }
+            }
+        });
+        
+        // Fix cell alignment for volume and KD columns
+        document.querySelectorAll('#keywordsTableBody tr').forEach(row => {
+            const cells = row.querySelectorAll('td');
+            
+            // Skip if there are fewer than 3 cells
+            if (cells.length < 3) return;
+            
+            // Center-align volume (3rd column) and KD (4th column) if they exist
+            if (cells[2]) { // Volume column
+                cells[2].style.textAlign = 'center';
+            }
+            
+            if (cells[3]) { // KD column
+                cells[3].style.textAlign = 'center';
+            }
+        });
     }
     
     setupImportedFileSearch() {
@@ -1607,39 +1739,36 @@ class ProjectManager {
                 const dataToSort = [...(this.currentImportedData.filteredData || this.currentImportedData.data)];
                 
                 // Sort the data
-                const sortedData = dataToSort.sort((a, b) => {
-                    let aVal = a[sortColumn];
-                    let bVal = b[sortColumn];
+                dataToSort.sort((a, b) => {
+                    const aValue = String(a[sortColumn] || '').toLowerCase();
+                    const bValue = String(b[sortColumn] || '').toLowerCase();
                     
-                    // Convert to strings for proper comparison
-                    aVal = aVal !== undefined && aVal !== null ? String(aVal).toLowerCase() : '';
-                    bVal = bVal !== undefined && bVal !== null ? String(bVal).toLowerCase() : '';
-                    
-                    // Try to sort numerically if possible
-                    const aNum = parseFloat(aVal);
-                    const bNum = parseFloat(bVal);
+                    // Check if values are numbers
+                    const aNum = parseFloat(aValue);
+                    const bNum = parseFloat(bValue);
                     
                     if (!isNaN(aNum) && !isNaN(bNum)) {
+                        // Sort numerically
                         return newDirection === 'asc' ? aNum - bNum : bNum - aNum;
-                    }
-                    
-                    // Fall back to string comparison
-                    if (newDirection === 'asc') {
-                        return aVal.localeCompare(bVal);
                     } else {
-                        return bVal.localeCompare(aVal);
+                        // Sort alphabetically
+                        if (aValue < bValue) return newDirection === 'asc' ? -1 : 1;
+                        if (aValue > bValue) return newDirection === 'asc' ? 1 : -1;
+                        return 0;
                     }
                 });
                 
-                // Update the filtered data with the sorted data
-                this.currentImportedData.filteredData = sortedData;
+                // Update the current filtered data
+                this.currentImportedData.filteredData = dataToSort;
                 
                 // Display the sorted data
-                this.displayImportedDataPage(sortedData, 1);
+                this.displayImportedDataPage(dataToSort, 1);
                 
-                // Update pagination
-                this.setupImportedDataPagination(sortedData);
-            }, true); // Use capturing phase for our listener
+                // Make sure KD column is properly styled after sorting
+                if (this.fixImportedTableStyles) {
+                    this.fixImportedTableStyles();
+                }
+            });
         });
     }
     
@@ -1917,6 +2046,11 @@ class ProjectManager {
         // Ensure the global count is updated after displaying a new page of imported data
         if (window.updateSelectedCount) window.updateSelectedCount();
         if (window.updateSelectAllCheckboxState) window.updateSelectAllCheckboxState();
+        
+        // Fix styling for imported table columns
+        if (this.fixImportedTableStyles) {
+            this.fixImportedTableStyles();
+        }
     }
     
     attachPaginationEventListeners(data, currentPage) {
@@ -2764,5 +2898,26 @@ class ProjectManager {
         
         // Show notification
         this.showNotification(`Project renamed to "${newName}"`, 'success');
+    }
+
+    setupTableStyleFixer() {
+        // Periodically check and fix imported table styles
+        setInterval(() => {
+            if (this.currentImportedData && this.fixImportedTableStyles) {
+                // Check if we need to fix any Value column headers to show as KD
+                const valueHeaders = document.querySelectorAll('th[data-sort="value"] .font-semibold, th[data-sort="kd"] .font-semibold');
+                let needsFix = false;
+                
+                valueHeaders.forEach(header => {
+                    if (header && header.textContent !== 'KD') {
+                        needsFix = true;
+                    }
+                });
+                
+                if (needsFix) {
+                    this.fixImportedTableStyles();
+                }
+            }
+        }, 1000); // Check every second
     }
 } 

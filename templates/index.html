@@ -33,7 +33,7 @@
         
         /* Custom project file item style */
         .project-file-item {
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
             border: 1px solid #e2e8f0;
             color: #1e293b; 
             border-radius: 0.375rem;
@@ -45,9 +45,9 @@
         }
         
         .dark-mode .project-file-item {
-            background-color: #334155;
-            border-color: #475569;
-            color: #f1f5f9;
+            background-color: #1e293b;
+            border-color: #334155;
+            color: #f8fafc;
         }
         
         /* Fix dark mode toggle button */
@@ -61,7 +61,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #3b82f6;
+            background-color: #4f46e5;
             color: white;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             border: none;
@@ -73,10 +73,11 @@
         .dark-mode-toggle:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            background-color: #6366f1;
         }
         
         .dark-mode .dark-mode-toggle {
-            background-color: #60a5fa;
+            background-color: #818cf8;
         }
         
         /* Force table header to be sticky */
@@ -109,15 +110,291 @@
         
         /* Fix file visibility */
         #project-file-list {
-            background-color: #ffffff !important;
+            background-color: #f8fafc !important;
             border: 1px solid #e2e8f0 !important;
             padding: 0.5rem !important;
             border-radius: 0.375rem !important;
         }
         
         .dark-mode #project-file-list {
+            background-color: #0f172a !important;
+            border-color: #1e293b !important;
+        }
+        
+        /* Improved UI for search threshold control */
+        .threshold-control {
+            background-color: #f8fafc !important;
+            color: #1e293b !important;
+            border-radius: 0.375rem !important;
+            padding: 0.5rem 0.75rem !important;
+            font-weight: 500 !important;
+            border: 1px solid #e2e8f0 !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .threshold-control:hover {
+            background-color: #e2e8f0 !important;
+        }
+        
+        .dark-mode .threshold-control {
+            background-color: #334155 !important;
+            color: #f8fafc !important;
+            border-color: #475569 !important;
+        }
+        
+        .dark-mode .threshold-control:hover {
+            background-color: #475569 !important;
+        }
+        
+        /* Improved pagination controls */
+        .items-per-page {
+            background-color: #f8fafc !important;
+            color: #1e293b !important;
+            border-radius: 0.375rem !important;
+            padding: 0.5rem 0.75rem !important;
+            font-weight: 500 !important;
+            border: 1px solid #e2e8f0 !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .items-per-page:hover {
+            background-color: #e2e8f0 !important;
+        }
+        
+        .dark-mode .items-per-page {
             background-color: #1e293b !important;
+            color: #f8fafc !important;
             border-color: #334155 !important;
+        }
+        
+        .dark-mode .items-per-page:hover {
+            background-color: #334155 !important;
+        }
+        
+        /* Saved keyword lists styles */
+        .saved-keyword-list {
+            background-color: #6366f1 !important;
+            color: #ffffff !important;
+            transition: all 0.2s ease !important;
+            border-radius: 0.375rem !important;
+        }
+        
+        .saved-keyword-list:hover {
+            background-color: #4f46e5 !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        .dark-mode .saved-keyword-list {
+            background-color: #4f46e5 !important;
+        }
+        
+        .dark-mode .saved-keyword-list:hover {
+            background-color: #4338ca !important;
+        }
+        
+        /* UI friendly navigation action buttons */
+        .action-button {
+            background-color: #f8fafc !important;
+            color: #4f46e5 !important;
+            border-radius: 0.375rem !important;
+            padding: 0.5rem !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .action-button:hover {
+            background-color: #e0e7ff !important;
+        }
+        
+        .dark-mode .action-button {
+            background-color: #312e81 !important;
+            color: #a5b4fc !important;
+        }
+        
+        .dark-mode .action-button:hover {
+            background-color: #3730a3 !important;
+        }
+        
+        /* Adjust sidebar collapse styles */
+        .sidebar-collapsed {
+            width: 4rem !important;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-collapsed .sidebar-item-text {
+            display: none !important;
+        }
+        
+        .sidebar-collapsed .project-name {
+            display: none !important;
+        }
+        
+        .sidebar-collapsed .sidebar-section-header {
+            display: none !important;
+        }
+        
+        /* Preserve important icons even when collapsed */
+        .sidebar-collapsed .preserve-icon {
+            display: flex !important;
+            margin: 0 auto !important;
+            text-align: center !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 2rem !important;
+            height: 2rem !important;
+            font-size: 1rem !important;
+        }
+        
+        .sidebar-collapsed #import-file-btn {
+            padding: 0.5rem !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+        
+        .sidebar-collapsed #import-file-btn i {
+            margin: 0 !important;
+        }
+        
+        .sidebar-collapsed #create-project-btn {
+            position: relative !important;
+            display: block !important;
+            margin: 0.5rem auto !important;
+        }
+        
+        .sidebar-collapsed #rename-project-btn {
+            position: relative !important;
+            margin: 0.5rem auto !important;
+            padding: 0.5rem !important;
+            display: block !important;
+        }
+        
+        /* Hide delete project button when collapsed */
+        .sidebar-collapsed #delete-project-btn {
+            display: none !important;
+        }
+        
+        /* Fix rename button positioning */
+        .sidebar-collapsed .absolute.inset-y-0.right-8.flex.items-center {
+            right: 0 !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            position: absolute !important;
+        }
+        
+        /* Fix project selector and related buttons */
+        .sidebar-collapsed #project-selector {
+            margin-bottom: 1rem !important;
+            width: 0 !important;
+            height: 0 !important;
+            padding: 0 !important;
+            opacity: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        .sidebar-collapsed .sidebar-item-icon {
+            margin: 0 auto !important;
+            font-size: 1.25rem !important;
+        }
+        
+        .sidebar-expanded {
+            width: 16rem !important;
+            transition: all 0.3s ease;
+        }
+        
+        /* Center icons when collapsed */
+        .sidebar-collapsed .sidebar-menu-item {
+            justify-content: center !important;
+            padding: 0.75rem 0 !important;
+        }
+        
+        /* Show only file icons when collapsed but hide filenames and delete buttons */
+        .sidebar-collapsed .project-file-item i.fas.fa-file-alt {
+            display: block !important;
+            text-align: center !important;
+            margin: 0 auto !important;
+            padding: 0.25rem !important;
+        }
+        
+        .sidebar-collapsed .project-file-item .filename {
+            display: none !important;
+        }
+        
+        .sidebar-collapsed .delete-file-btn {
+            display: none !important;
+        }
+        
+        .sidebar-collapsed .project-file-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            padding: 0.5rem !important;
+        }
+        
+        /* Adjust the collapse button rotation and position */
+        .sidebar-collapsed #sidebar-collapse-btn i {
+            transform: rotate(180deg);
+        }
+        
+        /* Position collapse button to the bottom right and style it */
+        #sidebar-collapse-btn {
+            position: absolute !important;
+            right: -1rem !important;
+            bottom: 1rem !important;
+            border-radius: 50% !important;
+            width: 2rem !important;
+            height: 2rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background-color: #f1f5f9 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+            transition: all 0.2s ease !important;
+            z-index: 30 !important;
+        }
+        
+        #sidebar-collapse-btn:hover {
+            background-color: #e2e8f0 !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .dark-mode #sidebar-collapse-btn {
+            background-color: #334155 !important;
+            color: #f8fafc !important;
+        }
+        
+        .dark-mode #sidebar-collapse-btn:hover {
+            background-color: #475569 !important;
+        }
+        
+        /* Replace the bottom border container with flex-grow to push collapse button to bottom */
+        .p-3.border-t.border-slate-200.flex.justify-center {
+            border-top: none !important;
+            position: relative !important;
+            margin-top: auto !important;
+            padding-bottom: 3rem !important;
+        }
+        
+        /* UI for search controls (searchbar and buttons) */
+        .search-controls {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .search-controls:focus-within {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .dark-mode .search-controls {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+        
+        .dark-mode .search-controls:focus-within {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
         }
         
         @media (prefers-color-scheme: dark) {
@@ -140,7 +417,7 @@
 
     <!-- MAIN: Sidebar with improved styling -->
     <aside id="sidebar"
-        class="sidebar fixed top-0 left-0 h-full shadow-sm">
+        class="sidebar fixed top-0 left-0 h-full shadow-sm bg-f8fafc dark:bg-1e293b sidebar-expanded flex flex-col">
         <!-- MAIN: Logo Section -->
         <div class="p-4 flex justify-between items-center border-b border-slate-200">
             <div class="flex items-center">
@@ -153,86 +430,91 @@
             </button>
         </div>
 
-        <!-- Add after the logo section, inside the sidebar -->
-        <div class="p-3 border-b border-slate-200">
-            <div class="flex justify-between items-center mb-1.5">
-                <h5 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Project</h5>
-                <button id="create-project-btn" class="text-slate-400 hover:text-slate-600" title="Create New Project">
-                    <i class="fas fa-plus"></i>
-                </button>
-            </div>
-            <div class="relative">
-                <select id="project-selector" class="w-full bg-white text-slate-700 border border-slate-200 rounded-lg py-1.5 px-2.5 text-sm appearance-none">
-                    <option value="default">Default Project</option>
-                </select>
-                <div class="absolute inset-y-0 right-8 flex items-center pointer-events-none">
-                    <i class="fas fa-chevron-down text-xs text-slate-400"></i>
-                </div>
-                <div class="absolute inset-y-0 right-8 flex items-center">
-                    <button id="rename-project-btn" class="px-1.5 text-slate-400 hover:text-slate-600" title="Rename Project">
-                        <i class="fas fa-edit text-sm"></i>
+        <!-- Main sidebar content -->
+        <div class="flex-grow overflow-y-auto">
+            <!-- Project section -->
+            <div class="p-3 border-b border-slate-200">
+                <div class="flex justify-between items-center mb-1.5">
+                    <h5 class="text-xs font-semibold text-slate-500 uppercase tracking-wider sidebar-item-text">Project</h5>
+                    <button id="create-project-btn" class="text-slate-400 hover:text-slate-600 sidebar-item-icon preserve-icon" title="Create New Project">
+                        <i class="fas fa-plus"></i>
                     </button>
                 </div>
-                <button id="delete-project-btn" class="absolute right-0 top-0 h-full px-2 text-slate-400 hover:text-red-500" title="Delete Current Project">
-                    <i class="fas fa-trash-alt text-sm"></i>
+                <div class="relative">
+                    <select id="project-selector" class="w-full bg-white text-slate-700 border border-slate-200 rounded-lg py-1.5 px-2.5 text-sm appearance-none">
+                        <option value="default">Default Project</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-8 flex items-center pointer-events-none">
+                        <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+                    </div>
+                    <div class="absolute inset-y-0 right-8 flex items-center">
+                        <button id="rename-project-btn" class="px-1.5 text-slate-400 hover:text-slate-600 preserve-icon" title="Rename Project">
+                            <i class="fas fa-edit text-sm"></i>
+                        </button>
+                    </div>
+                    <button id="delete-project-btn" class="absolute right-0 top-0 h-full px-2 text-slate-400 hover:text-red-500 preserve-icon" title="Delete Current Project">
+                        <i class="fas fa-trash-alt text-sm"></i>
+                    </button>
+                </div>
+                <div id="project-file-list" class="mt-2 max-h-40 overflow-y-auto">
+                    <!-- Imported files will be listed here -->
+                </div>
+                <button id="import-file-btn" class="mt-2 text-xs bg-white hover:bg-slate-50 text-slate-700 transition-colors py-1.5 px-3 rounded-lg w-full flex items-center justify-center border border-slate-200">
+                    <i class="fas fa-file-upload mr-1.5 preserve-icon"></i> <span class="sidebar-item-text">Import File</span>
                 </button>
+                <input type="file" id="file-upload-input" accept=".csv, .xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/csv" class="hidden">
             </div>
-            <div id="project-file-list" class="mt-2 max-h-40 overflow-y-auto">
-                <!-- Imported files will be listed here -->
-            </div>
-            <button id="import-file-btn" class="mt-2 text-xs bg-white hover:bg-slate-50 text-slate-700 transition-colors py-1.5 px-3 rounded-lg w-full flex items-center justify-center border border-slate-200">
-                <i class="fas fa-file-upload mr-1.5"></i> Import File
-            </button>
-            <input type="file" id="file-upload-input" accept=".csv, .xlsx, .xls, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/csv" class="hidden">
+
+            <!-- MAIN: Navigation Links -->
+            <nav class="p-3">
+                <h5 class="sidebar-section-header sidebar-item-text">Views</h5>
+                <ul>
+                    <li>
+                        <a href="#" id="main-table-view"
+                            class="sidebar-menu-item active flex items-center p-2 rounded-lg hover:bg-f1f5f9 dark:hover:bg-1e293b transition-colors duration-150">
+                            <i class="fas fa-table item-icon sidebar-item-icon preserve-icon"></i>
+                            <span class="ml-2 sidebar-item-text">Main Table</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="saved-keywords-view"
+                            class="sidebar-menu-item flex items-center p-2 rounded-lg hover:bg-f1f5f9 dark:hover:bg-1e293b transition-colors duration-150">
+                            <i class="fas fa-bookmark item-icon sidebar-item-icon preserve-icon"></i>
+                            <span class="ml-2 sidebar-item-text">Saved Keywords</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <h5 class="sidebar-section-header mt-4 sidebar-item-text">Saved Keyword Lists</h5>
+                <div id="saved-keyword-lists-container">
+                    <!-- Lists will be added here via JavaScript -->
+                    <div class="saved-keyword-list-item saved-keyword-list flex items-center justify-between p-2 rounded mb-1">
+                        <div class="flex items-center">
+                            <i class="fas fa-list-ul mr-2 sidebar-item-icon preserve-icon"></i>
+                            <span class="sidebar-item-text">Ruqyah</span>
+                        </div>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded sidebar-item-text">19</span>
+                    </div>
+                    <!-- ... other list items ... -->
+                </div>
+                <button id="create-list-btn" class="flex items-center justify-center w-full mt-2 text-sm text-slate-600 hover:text-indigo-600 transition-colors duration-150">
+                    <i class="fas fa-plus mr-1 sidebar-item-icon preserve-icon"></i>
+                    <span class="sidebar-item-text">Create New List</span>
+                </button>
+            </nav>
         </div>
-
-        <!-- MAIN: Navigation Links -->
-        <nav class="p-3">
-            <h5 class="sidebar-section-header">Views</h5>
-            <ul>
-                <li>
-                    <a href="#" id="main-table-view"
-                        class="sidebar-menu-item active flex items-center">
-                        <i class="fas fa-table item-icon"></i>
-                        <span class="ml-2">Main Table</span>
-                    </a>
-                </li>
-                <li>
-                    <!-- SAVED KEYWORDS: Sidebar Navigation Link -->
-                    <a href="#" id="saved-keywords-view"
-                        class="sidebar-menu-item flex items-center">
-                        <i class="fas fa-star item-icon"></i>
-                        <span class="ml-2">Saved Keywords</span>
-                    </a>
-                </li>
-            </ul>
-
-            <!-- SAVED KEYWORDS: Sidebar List of Saved Keyword Lists -->
-            <h5 class="sidebar-section-header mt-5 mb-2">Saved Keyword Lists</h5>
-            <ul id="saved-keyword-lists" class="max-h-[calc(100vh-400px)] overflow-y-auto mb-2 pr-1 space-y-0.5">
-                <!-- Saved keyword lists will be dynamically added here -->
-                <li class="text-xs text-slate-500 px-2.5 py-1.5">
-                    No saved lists yet
-                </li>
-            </ul>
-            <!-- SAVED KEYWORDS: Create New List Button in Sidebar -->
-            <button id="create-new-list"
-                class="mt-2 text-xs bg-white hover:bg-slate-50 text-slate-700 transition-colors py-1.5 px-3 rounded-lg w-full flex items-center justify-center border border-slate-200">
-                <i class="fas fa-plus mr-1.5"></i> Create New List
-            </button>
-        </nav>
-
-        <!-- MAIN: Collapse Button (only visible on desktop) -->
-        <div class="absolute bottom-4 right-4 hidden lg:block">
-            <button id="sidebar-collapse"
-                class="sidebar-collapse-btn">
-                <i id="collapse-icon" class="fas fa-chevron-left text-xs"></i>
+        
+        <!-- Sidebar collapse button (at the bottom) -->
+        <div class="p-3 border-t border-slate-200 flex justify-center">
+            <!-- Collapse button moved to absolute position via CSS -->
+            <button id="sidebar-collapse-btn" class="text-slate-500 hover:text-slate-700 focus:outline-none transition-all duration-300" title="Collapse Sidebar">
+                <i class="fas fa-angle-left"></i>
             </button>
         </div>
     </aside>
 
     <!-- MAIN: Main Content with improved layout -->
-    <div id="content-area" class="content-area min-h-screen lg:ml-[240px] p-4 md:p-6">
+    <div id="content-area" class="content-area min-h-screen lg:ml-[240px] p-4 md:p-6 transition-all duration-300 bg-f8fafc">
         <!-- MAIN: Mobile Header with Toggle Button -->
         <header class="flex items-center justify-between lg:hidden bg-white border-b border-slate-200 p-3 sticky top-0 z-20 mb-4 rounded-lg shadow-sm">
             <button id="sidebar-toggle" class="text-slate-700 focus:outline-none">
@@ -832,11 +1114,11 @@
     <template id="project-file-item-template">
         <div class="project-file-item">
             <div>
-                <i class="fas fa-file-alt mr-2"></i>
+                <i class="fas fa-file-alt mr-2 preserve-icon"></i>
                 <span class="filename"></span>
             </div>
             <div>
-                <button class="delete-file-btn text-slate-400 hover:text-red-500">
+                <button class="delete-file-btn text-slate-400 hover:text-red-500 preserve-icon">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -877,7 +1159,7 @@
             const sidebarClose = document.getElementById('sidebar-close');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
             const contentArea = document.getElementById('content-area');
-            const sidebarCollapse = document.getElementById('sidebar-collapse');
+            const sidebarCollapse = document.getElementById('sidebar-collapse-btn');
             const collapseIcon = document.getElementById('collapse-icon');
 
             // Toggle sidebar on mobile
@@ -1062,6 +1344,210 @@
             
             // Run periodically
             setInterval(fixKDColumnAlignment, 300);
+        });
+    </script>
+
+    <!-- Ensure dark mode and sidebar collapse are initialized -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize dark mode toggle
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            if (darkModeToggle) {
+                console.log("Setting up dark mode toggle");
+                
+                // Direct click handler to ensure it works
+                darkModeToggle.onclick = function(e) {
+                    if (e) e.preventDefault();
+                    console.log("Dark mode toggle clicked");
+                    document.body.classList.toggle('dark-mode');
+                    
+                    const isDark = document.body.classList.contains('dark-mode');
+                    localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+                    
+                    // Update icon
+                    this.innerHTML = isDark 
+                        ? '<i class="fas fa-sun"></i>' 
+                        : '<i class="fas fa-moon"></i>';
+                        
+                    // Update table colors for dark mode
+                    if (isDark) {
+                        document.querySelectorAll('th, td').forEach(el => {
+                            if (el.tagName === 'TH') el.style.backgroundColor = '#1e293b';
+                            el.style.color = '#f8fafc';
+                        });
+                    } else {
+                        document.querySelectorAll('th, td').forEach(el => {
+                            if (el.tagName === 'TH') el.style.backgroundColor = '#f8fafc';
+                            el.style.color = '#1e293b';
+                        });
+                    }
+                };
+                
+                // Apply initial state based on localStorage
+                const isDarkMode = localStorage.getItem('darkMode') === 'true';
+                if (isDarkMode) {
+                    document.body.classList.add('dark-mode');
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    
+                    // Force update text colors for dark mode
+                    document.querySelectorAll('th, td').forEach(el => {
+                        if (el.tagName === 'TH') el.style.backgroundColor = '#1e293b';
+                        el.style.color = '#f8fafc';
+                    });
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            }
+            
+            // Initialize sidebar collapse
+            const sidebar = document.getElementById('sidebar');
+            const collapseButton = document.getElementById('sidebar-collapse-btn');
+            const contentArea = document.getElementById('content-area');
+            
+            if (sidebar && collapseButton) {
+                console.log("Setting up sidebar collapse");
+                
+                // Check for saved sidebar state
+                const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                
+                // Apply initial state
+                if (sidebarCollapsed) {
+                    sidebar.classList.add('sidebar-collapsed');
+                    sidebar.classList.remove('sidebar-expanded');
+                    
+                    if (contentArea) {
+                        contentArea.classList.remove('lg:ml-[240px]');
+                        contentArea.classList.add('lg:ml-[64px]');
+                    }
+
+                    // Make sure important icons are visible in collapsed mode
+                    document.querySelectorAll('.preserve-icon').forEach(icon => {
+                        icon.style.display = 'flex';
+                        icon.style.margin = '0 auto';
+                        
+                        const parentMenuItem = icon.closest('.sidebar-menu-item');
+                        if (parentMenuItem) {
+                            parentMenuItem.style.justifyContent = 'center';
+                        }
+                    });
+                    
+                    // Show file icons in collapsed mode
+                    document.querySelectorAll('.project-file-item .fas.fa-file-alt').forEach(icon => {
+                        icon.style.display = 'block'; 
+                    });
+                    
+                    // Hide filenames and delete buttons when collapsed
+                    document.querySelectorAll('.project-file-item .filename').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    
+                    document.querySelectorAll('.delete-file-btn').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    
+                    // Hide project delete button
+                    if (document.getElementById('delete-project-btn')) {
+                        document.getElementById('delete-project-btn').style.display = 'none';
+                    }
+                }
+                
+                // Add click handler
+                collapseButton.onclick = function(e) {
+                    if (e) e.preventDefault();
+                    console.log("Sidebar collapse button clicked");
+                    
+                    const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+                    
+                    if (isCollapsed) {
+                        // Expand
+                        sidebar.classList.remove('sidebar-collapsed');
+                        sidebar.classList.add('sidebar-expanded');
+                        
+                        if (contentArea) {
+                            contentArea.classList.add('lg:ml-[240px]');
+                            contentArea.classList.remove('lg:ml-[64px]');
+                        }
+                        
+                        // Reset menu item alignment
+                        document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+                            item.style.justifyContent = 'flex-start';
+                        });
+                        
+                        // Show filenames and delete buttons when expanded
+                        document.querySelectorAll('.project-file-item .filename').forEach(el => {
+                            el.style.display = '';
+                        });
+                        
+                        document.querySelectorAll('.delete-file-btn').forEach(el => {
+                            el.style.display = '';
+                        });
+                        
+                        // Show project delete button
+                        if (document.getElementById('delete-project-btn')) {
+                            document.getElementById('delete-project-btn').style.display = '';
+                        }
+                        
+                        localStorage.setItem('sidebarCollapsed', 'false');
+                    } else {
+                        // Collapse
+                        sidebar.classList.add('sidebar-collapsed');
+                        sidebar.classList.remove('sidebar-expanded');
+                        
+                        if (contentArea) {
+                            contentArea.classList.remove('lg:ml-[240px]');
+                            contentArea.classList.add('lg:ml-[64px]');
+                        }
+                        
+                        // Center align menu items with icons
+                        document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+                            item.style.justifyContent = 'center';
+                        });
+                        
+                        // Hide filenames and delete buttons when collapsed
+                        document.querySelectorAll('.project-file-item .filename').forEach(el => {
+                            el.style.display = 'none';
+                        });
+                        
+                        document.querySelectorAll('.delete-file-btn').forEach(el => {
+                            el.style.display = 'none';
+                        });
+                        
+                        // Ensure file icons are visible in collapsed mode
+                        document.querySelectorAll('.project-file-item .fas.fa-file-alt').forEach(icon => {
+                            icon.style.display = 'block';
+                        });
+                        
+                        // Hide project delete button
+                        if (document.getElementById('delete-project-btn')) {
+                            document.getElementById('delete-project-btn').style.display = 'none';
+                        }
+                        
+                        localStorage.setItem('sidebarCollapsed', 'true');
+                    }
+                };
+                
+                // Add tooltips to sidebar items when collapsed
+                document.querySelectorAll('.sidebar-menu-item, button[title]').forEach(item => {
+                    const itemText = item.querySelector('.sidebar-item-text')?.textContent.trim() || item.getAttribute('title') || '';
+                    if (itemText) {
+                        item.setAttribute('title', itemText);
+                    }
+                });
+
+                // Add tooltips to preserved icons
+                document.querySelectorAll('.preserve-icon').forEach(icon => {
+                    // Find closest element with text to use as tooltip
+                    const textElement = icon.parentElement.querySelector('.sidebar-item-text');
+                    const parentWithTitle = icon.closest('[title]');
+                    
+                    if (textElement) {
+                        icon.setAttribute('title', textElement.textContent.trim());
+                    } else if (parentWithTitle) {
+                        icon.setAttribute('title', parentWithTitle.getAttribute('title'));
+                    }
+                });
+            }
         });
     </script>
 </body>

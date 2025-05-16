@@ -118,6 +118,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize dark mode from localStorage
     initializeDarkMode();
     
+    // Fix for KD column headers - make sure all value columns show "KD" instead of "Value"
+    const fixKDColumnHeaders = function() {
+        const valueHeaders = document.querySelectorAll('th[data-sort="value"] .font-semibold, th[data-sort*="kd"] .font-semibold, th[data-sort*="difficulty"] .font-semibold');
+        valueHeaders.forEach(header => {
+            if (header && header.textContent !== 'KD') {
+                header.textContent = 'KD';
+            }
+        });
+    };
+    
+    // Run KD column header fixes initially and periodically
+    fixKDColumnHeaders();
+    setInterval(fixKDColumnHeaders, 1000);
+    
     // Add the KD column fix function call
     fixKDColumnAlignment();
     
@@ -129,6 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize All Volumes dropdown
     setupAllVolumesDropdown();
+    
+    // Rest of the existing initialization code...
     
     // Explicitly make sure the volume filters work
     console.log("Initializing volume filter dropdowns...");
@@ -2394,7 +2410,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Original initialization code...
         initializeDarkMode();
         
-        // Add the KD column fix
+        // Fix KD column headers
+        fixKDColumnHeaders();
+        
+        // Add the KD column fix function call
         fixKDColumnAlignment();
         
         // Set interval to check and fix KD column periodically
@@ -2406,7 +2425,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize All Volumes dropdown
         setupAllVolumesDropdown();
         
-        // Rest of the existing code...
+        // Rest of the existing initialization code...
     });
 
     // Function to toggle modals
@@ -2953,4 +2972,118 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    // Sidebar collapse functionality
+    function initSidebarCollapse() {
+        const sidebar = document.getElementById('sidebar');
+        const collapseButton = document.getElementById('sidebar-collapse-btn');
+        const contentArea = document.getElementById('content-area');
+        
+        if (!sidebar || !collapseButton) {
+            console.error("Sidebar elements not found");
+            return;
+        }
+        
+        // Check for saved state
+        const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        
+        // Initial state setup
+        if (sidebarCollapsed) {
+            applySidebarCollapsedState(true);
+        } else {
+            applySidebarCollapsedState(false);
+        }
+        
+        // Toggle sidebar when collapse button is clicked
+        collapseButton.addEventListener('click', function() {
+            const isCurrentlyCollapsed = sidebar.classList.contains('sidebar-collapsed');
+            applySidebarCollapsedState(!isCurrentlyCollapsed);
+        });
+        
+        // Function to apply sidebar state
+        function applySidebarCollapsedState(shouldCollapse) {
+            if (shouldCollapse) {
+                // Collapse sidebar
+                sidebar.classList.add('sidebar-collapsed');
+                sidebar.classList.remove('sidebar-expanded');
+                
+                // Update content area margin
+                if (contentArea) {
+                    contentArea.classList.remove('lg:ml-[240px]');
+                    contentArea.classList.add('lg:ml-[64px]');
+                }
+                
+                // Update button icon and tooltip
+                collapseButton.innerHTML = '<i class="fas fa-angle-right"></i>';
+                collapseButton.setAttribute('title', 'Expand Sidebar');
+                
+                // Save state
+                localStorage.setItem('sidebarCollapsed', 'true');
+            } else {
+                // Expand sidebar
+                sidebar.classList.remove('sidebar-collapsed');
+                sidebar.classList.add('sidebar-expanded');
+                
+                // Update content area margin
+                if (contentArea) {
+                    contentArea.classList.add('lg:ml-[240px]');
+                    contentArea.classList.remove('lg:ml-[64px]');
+                }
+                
+                // Update button icon and tooltip
+                collapseButton.innerHTML = '<i class="fas fa-angle-left"></i>';
+                collapseButton.setAttribute('title', 'Collapse Sidebar');
+                
+                // Save state
+                localStorage.setItem('sidebarCollapsed', 'false');
+            }
+        }
+    }
+
+    // Apply action button classes
+    function applyActionButtonClasses() {
+        // Apply to search threshold control
+        const thresholdControl = document.getElementById('threshold-value');
+        if (thresholdControl) {
+            thresholdControl.classList.add('threshold-control');
+        }
+        
+        // Apply to items per page control
+        const itemsPerPage = document.getElementById('items-per-page');
+        if (itemsPerPage) {
+            itemsPerPage.classList.add('items-per-page');
+        }
+        
+        // Apply to saved keyword lists
+        const savedKeywordLists = document.querySelectorAll('.saved-keyword-list-item');
+        savedKeywordLists.forEach(list => {
+            list.classList.add('saved-keyword-list');
+        });
+        
+        // Apply to action buttons (thumbs up/down, bookmark)
+        const actionButtons = document.querySelectorAll('.keyword-action-button');
+        actionButtons.forEach(button => {
+            button.classList.add('action-button');
+        });
+        
+        // Apply to search controls
+        const searchInput = document.querySelector('.keyword-search-input');
+        if (searchInput) {
+            const searchWrapper = searchInput.closest('.search-wrapper');
+            if (searchWrapper) {
+                searchWrapper.classList.add('search-controls');
+            }
+        }
+    }
+
+    // Initialize when document is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... existing initialization code ...
+        
+        // Initialize sidebar collapse
+        initSidebarCollapse();
+        
+        // Apply UI friendly button classes
+        applyActionButtonClasses();
+    });
 });

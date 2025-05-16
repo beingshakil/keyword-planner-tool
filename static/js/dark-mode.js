@@ -166,4 +166,126 @@ window.addEventListener('load', function() {
 });
 
 // Make available globally
-window.DarkMode = DarkMode; 
+window.DarkMode = DarkMode;
+
+// Dark mode functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const body = document.body;
+    const themeColorMeta = document.getElementById('theme-color');
+    
+    if (!darkModeToggle) {
+        console.error("Dark mode toggle button not found");
+        return;
+    }
+    
+    // Check for saved preference in localStorage
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    
+    // Initialize based on saved preference or system preference
+    if (isDarkMode) {
+        enableDarkMode();
+    } else {
+        disableDarkMode();
+    }
+    
+    // Add direct click handler to ensure it works
+    darkModeToggle.onclick = function(e) {
+        if (e) e.preventDefault();
+        
+        if (body.classList.contains('dark-mode')) {
+            disableDarkMode();
+        } else {
+            enableDarkMode();
+        }
+    };
+    
+    // Functions to enable/disable dark mode
+    function enableDarkMode() {
+        body.classList.add('dark-mode');
+        body.classList.remove('light-mode');
+        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        darkModeToggle.setAttribute('title', 'Switch to Light Mode');
+        if (themeColorMeta) themeColorMeta.content = '#1e293b';
+        localStorage.setItem('darkMode', 'true');
+        
+        // Update UI elements for dark mode
+        updateUIForDarkMode(true);
+    }
+    
+    function disableDarkMode() {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        darkModeToggle.setAttribute('title', 'Switch to Dark Mode');
+        if (themeColorMeta) themeColorMeta.content = '#4f46e5';
+        localStorage.setItem('darkMode', 'false');
+        
+        // Update UI elements for light mode
+        updateUIForDarkMode(false);
+    }
+    
+    // Update UI elements based on dark mode state
+    function updateUIForDarkMode(isDarkMode) {
+        // Set CSS variables for theme colors
+        const root = document.documentElement;
+        
+        if (isDarkMode) {
+            // Dark mode colors
+            root.style.setProperty('--bg-primary', '#0f172a');
+            root.style.setProperty('--bg-secondary', '#1e293b');
+            root.style.setProperty('--text-primary', '#f8fafc');
+            root.style.setProperty('--text-secondary', '#cbd5e1');
+            root.style.setProperty('--border-color', '#334155');
+            
+            // Update table headers
+            document.querySelectorAll('th').forEach(th => {
+                th.style.backgroundColor = '#1e293b';
+                th.style.color = '#f8fafc';
+            });
+            
+            // Update table cells
+            document.querySelectorAll('td').forEach(td => {
+                td.style.color = '#f8fafc';
+            });
+        } else {
+            // Light mode colors
+            root.style.setProperty('--bg-primary', '#f8fafc');
+            root.style.setProperty('--bg-secondary', '#f1f5f9');
+            root.style.setProperty('--text-primary', '#1e293b');
+            root.style.setProperty('--text-secondary', '#475569');
+            root.style.setProperty('--border-color', '#e2e8f0');
+            
+            // Reset table headers
+            document.querySelectorAll('th').forEach(th => {
+                th.style.backgroundColor = '#f8fafc';
+                th.style.color = '#1e293b';
+            });
+            
+            // Reset table cells
+            document.querySelectorAll('td').forEach(td => {
+                td.style.color = '#1e293b';
+            });
+        }
+    }
+    
+    // Also check system preference for dark mode
+    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // Apply system preference if no manual preference has been saved
+    if (localStorage.getItem('darkMode') === null && darkModeMediaQuery.matches) {
+        enableDarkMode();
+    }
+    
+    // Listen for system preference changes
+    darkModeMediaQuery.addEventListener('change', function(e) {
+        // Only auto-switch if no manual preference has been set
+        if (localStorage.getItem('darkMode') === null) {
+            if (e.matches) {
+                enableDarkMode();
+            } else {
+                disableDarkMode();
+            }
+        }
+    });
+}); 
