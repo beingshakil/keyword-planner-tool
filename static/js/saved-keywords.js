@@ -29,8 +29,11 @@ const SavedKeywords = (function() {
     // Initialize the module
     function init() {
         console.log("Initializing SavedKeywords module...");
-        // Load saved data
-        state.lists = JSON.parse(localStorage.getItem('savedKeywordLists')) || {};
+        
+        // Load saved data from backend instead of localStorage
+        fetchSavedLists();
+        
+        // Still use localStorage for pagination and active list settings
         state.activeListId = localStorage.getItem('activeListId') || null;
 
         // Load pagination settings
@@ -56,10 +59,80 @@ const SavedKeywords = (function() {
         // Set up event listeners
         setupEventListeners();
 
-        // Initialize saved keywords sidebar
-        updateSavedKeywordListsSidebar();
-
         console.log("SavedKeywords module initialized successfully");
+    }
+    
+    // Fetch saved lists from the backend
+    function fetchSavedLists() {
+        fetch('/api/saved-lists')
+            .then(response => response.json())
+            .then(data => {
+                // Convert the response to our state format
+                const lists = {};
+                
+                // Check if there are any lists returned from the backend
+                if (data.lists && data.lists.length > 0) {
+                    data.lists.forEach(list => {
+                        lists[list.name] = {
+                            name: list.name,
+                            count: list.count,
+                            keywords: [] // We'll fetch these when needed
+                        };
+                    });
+                } else {
+                    // If backend returns no lists, clear localStorage to prevent stale UI
+                    localStorage.removeItem('activeListId');
+                    localStorage.removeItem('savedKeywordLists');
+                    console.log("No saved lists found in backend");
+                }
+                
+                state.lists = lists;
+                
+                // Update UI
+                updateSavedKeywordListsSidebar();
+                updateSavedKeywordsView();
+                
+                // Also update the saved-keyword-lists-container in the sidebar
+                updateSavedKeywordListsContainer();
+            })
+            .catch(error => {
+                console.error('Error fetching saved lists:', error);
+            });
+    }
+    
+    // Fetch a specific saved list from the backend
+    function fetchSavedList(listName) {
+        fetch(`/api/saved-list?name=${encodeURIComponent(listName)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching list:', data.error);
+                    return;
+                }
+                
+                // Update our state with the fetched keywords
+                if (!state.lists[listName]) {
+                    state.lists[listName] = {
+                        name: listName,
+                        keywords: []
+                    };
+                }
+                
+                // Convert the response format to our state format
+                const keywords = data.keywords.map(kw => ({
+                    keyword: kw.keyword,
+                    volume: kw.volume,
+                    value: kw.value
+                }));
+                
+                state.lists[listName].keywords = keywords;
+                
+                // Update UI to show the loaded keywords
+                updateActiveListContent();
+            })
+            .catch(error => {
+                console.error('Error fetching saved list:', error);
+            });
     }
 
     // Cache all DOM elements
@@ -104,6 +177,36 @@ const SavedKeywords = (function() {
             elements['saved-keywords-view'].addEventListener('click', e => {
                 e.preventDefault();
                 setActiveView('saved');
+            });
+        }
+
+        // Sync lists button
+        const syncListsBtn = document.getElementById('sync-lists-btn');
+        if (syncListsBtn) {
+            syncListsBtn.addEventListener('click', e => {
+                e.preventDefault();
+                // Show loading indicator
+                showNotification('Syncing lists...');
+                // Force sync with backend
+                forceSyncSavedLists();
+            });
+        }
+
+        // Refresh lists button
+        const refreshListsBtn = document.getElementById('refresh-lists-btn');
+        if (refreshListsBtn) {
+            refreshListsBtn.addEventListener('click', e => {
+                e.preventDefault();
+                // Clear all localStorage related to saved lists
+                localStorage.removeItem('activeListId');
+                localStorage.removeItem('savedKeywordLists');
+                localStorage.removeItem('savedKeywordsPagination');
+                
+                // Show loading indicator
+                showNotification('Refreshing lists data...');
+                
+                // Force page reload to clear any cached UI state
+                window.location.reload();
             });
         }
 
@@ -332,35 +435,66 @@ const SavedKeywords = (function() {
     }
 
     function createNewList() {
-        const input = elements['list-name'];
-        if (!input) return;
-
-        const listName = input.value.trim();
+        const listName = elements['list-name'].value.trim();
         if (!listName) {
-            alert('Please enter a name for your list');
+            alert('Please enter a list name');
             return;
         }
 
-        const listId = 'list_' + Date.now();
-        state.lists[listId] = {
-            name: listName,
-            keywords: [],
-            createdAt: Date.now()
-        };
-
-        // Save and update UI
-        saveLists();
-        elements['create-list-modal'].classList.add('hidden');
-        updateSavedKeywordListsSidebar();
-
-        // If in saved view, set as active list
-        if (!elements['saved-keywords-content'].classList.contains('hidden')) {
-            state.activeListId = listId;
-            localStorage.setItem('activeListId', state.activeListId);
-            updateSavedKeywordsView();
+        // Check if list name already exists
+        if (state.lists[listName]) {
+            alert('A list with this name already exists');
+            return;
         }
 
-        alert(`List "${listName}" created successfully`);
+        // Show loading indicator
+        showNotification('Creating new list...');
+
+        // Create the list in the backend
+        fetch('/api/save-list', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: listName,
+                keywords: [] // Empty list initially
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Error creating list: ' + data.error);
+                return;
+            }
+            
+            // Update local state
+            state.lists[listName] = {
+                name: listName,
+                keywords: []
+            };
+            
+            // Set as active list
+            state.activeListId = listName;
+            localStorage.setItem('activeListId', listName);
+            
+            // Close modal
+            elements['create-list-modal'].classList.add('hidden');
+            elements['list-name'].value = '';
+            
+            // Update all UI components
+            updateSavedKeywordListsContainer(); // Update sidebar list container first
+            updateSavedKeywordListsSidebar();   // Update sidebar lists
+            setActiveView('saved');             // Switch to saved view
+            updateSavedKeywordsView();          // Update content
+            
+            // Show success notification
+            showNotification(`Created new list "${listName}"`);
+        })
+        .catch(error => {
+            console.error('Error creating list:', error);
+            alert('Failed to create list. Please try again.');
+        });
     }
 
     // Save keywords functions
@@ -373,9 +507,13 @@ const SavedKeywords = (function() {
 
         // Update count display
         countEl.textContent = selectedKeywords.length;
+        
+        // Store selected keywords in dataset for later retrieval
+        elements['save-to-list-modal'].dataset.keywords = JSON.stringify(selectedKeywords);
 
         // Populate dropdown
         select.innerHTML = '';
+        select.innerHTML = '<option value="new">Create new list</option>';
         const listsSection = document.getElementById('save-to-existing-list');
         const listsCount = Object.keys(state.lists).length;
 
@@ -409,88 +547,84 @@ const SavedKeywords = (function() {
     }
 
     function saveKeywordsToList() {
-        const selectedKeywords = getSelectedKeywords();
+        const selectedOption = elements['existing-lists'].value;
+        const newListName = elements['new-list-name'].value.trim();
+        const selectedKeywords = JSON.parse(elements['save-to-list-modal'].dataset.keywords || '[]');
+        
         if (selectedKeywords.length === 0) {
             alert('No keywords selected');
             return;
         }
-
-        const newListName = elements['new-list-name'].value.trim();
-        const existingListSelect = elements['existing-lists'];
-        let targetListId, listName;
-
-        // Determine if creating new list or using existing
-        if (newListName) {
+        
+        let targetListName = '';
+        
+        if (selectedOption === 'new' && newListName) {
             // Create new list
-            targetListId = 'list_' + Date.now();
-            listName = newListName;
-            state.lists[targetListId] = {
-                name: listName,
-                keywords: [],
-                createdAt: Date.now()
-            };
-        } else if (existingListSelect?.value) {
+            targetListName = newListName;
+            
+            // Check if list name already exists
+            if (state.lists[targetListName]) {
+                alert('A list with this name already exists');
+                return;
+            }
+        } else if (selectedOption !== 'new') {
             // Use existing list
-            targetListId = existingListSelect.value;
-            listName = state.lists[targetListId].name;
+            targetListName = selectedOption;
         } else {
-            alert('Please select an existing list or create a new one');
+            alert('Please select an existing list or enter a new list name');
             return;
         }
-
-        // Extract keyword data from the table
-        const keywordsData = selectedKeywords.map(keyword => {
-            // Find the checkbox in the main table (keywordsTableBody)
-            const mainTable = document.getElementById('keywordsTableBody');
-            let volume = '', value = '';
-            
-            if (mainTable) {
-                // Look for the row containing this keyword
-                const rows = mainTable.querySelectorAll('tr');
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length >= 4) {
-                        // Check if this row contains our keyword
-                        const keywordCell = cells[1];
-                        const keywordText = keywordCell.textContent.trim();
-                        
-                        if (keywordText === keyword) {
-                            // Extract volume and value/KD
-                            const volumeCell = cells[2];
-                            const valueCell = cells[3];
-                            
-                            volume = volumeCell.textContent.trim();
-                            value = valueCell.textContent.trim();
-                            break;
-                        }
-                    }
-                }
+        
+        // Either create a new list or add to existing one
+        let endpoint = '/api/save-list';
+        let method = 'POST';
+        
+        // If adding to existing list, need to get current keywords first
+        const currentKeywords = state.lists[targetListName]?.keywords || [];
+        const combinedKeywords = [...new Set([...currentKeywords.map(k => k.keyword), ...selectedKeywords])];
+        
+        fetch(endpoint, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: targetListName,
+                keywords: combinedKeywords
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Error saving keywords: ' + data.error);
+                return;
             }
             
-            return { keyword, volume, value };
+            // Update local state
+            state.lists[targetListName] = {
+                name: targetListName,
+                keywords: combinedKeywords.map(k => typeof k === 'string' ? {keyword: k} : k)
+            };
+            
+            // Set as active list
+            state.activeListId = targetListName;
+            localStorage.setItem('activeListId', targetListName);
+            
+            // Close modal
+            elements['save-to-list-modal'].classList.add('hidden');
+            
+            // Update UI
+            setActiveView('saved');
+            updateSavedKeywordListsSidebar();
+            updateSavedKeywordsView();
+            
+            // Show success message
+            showNotification(`${selectedKeywords.length} keywords saved to "${targetListName}"`);
+        })
+        .catch(error => {
+            console.error('Error saving keywords:', error);
+            alert('Failed to save keywords. Please try again.');
         });
-
-        // Add keywords to list, avoiding duplicates
-        const existingKeywords = state.lists[targetListId].keywords.map(k => k.keyword);
-        const newKeywords = keywordsData.filter(k => !existingKeywords.includes(k.keyword));
-        state.lists[targetListId].keywords = [...state.lists[targetListId].keywords, ...newKeywords];
-
-        // Save and update UI
-        saveLists();
-        state.activeListId = targetListId;
-        localStorage.setItem('activeListId', state.activeListId);
-        elements['save-to-list-modal'].classList.add('hidden');
-        updateSavedKeywordListsSidebar();
-
-        // Show success message
-        const addedCount = newKeywords.length;
-        const duplicateCount = keywordsData.length - addedCount;
-        let message = `${addedCount} keyword${addedCount !== 1 ? 's' : ''} saved to "${listName}"`;
-        if (duplicateCount > 0) {
-            message += ` (${duplicateCount} duplicate${duplicateCount !== 1 ? 's' : ''} skipped)`;
-        }
-        alert(message);
     }
 
     // Sidebar and view updating
@@ -515,7 +649,7 @@ const SavedKeywords = (function() {
         // Add each list to the sidebar
         listIds.forEach(listId => {
             const list = state.lists[listId];
-            const keywordCount = list.keywords.length;
+            const keywordCount = list.count || (list.keywords ? list.keywords.length : 0);
             
             // Create list item
             const listItem = document.createElement('li');
@@ -549,6 +683,9 @@ const SavedKeywords = (function() {
                 // Reset pagination to page 1
                 state.pagination.currentPage = 1;
                 localStorage.setItem('savedKeywordsPagination', JSON.stringify(state.pagination));
+                
+                // Fetch keywords for this list from the backend
+                fetchSavedList(listId);
                 
                 // Update UI
                 setActiveView('saved');
@@ -599,6 +736,8 @@ const SavedKeywords = (function() {
         if (!state.activeListId || !state.lists[state.activeListId]) {
             state.activeListId = Object.keys(state.lists)[0];
             localStorage.setItem('activeListId', state.activeListId);
+            // Fetch keywords for this list
+            fetchSavedList(state.activeListId);
         }
 
         // Update active list content
@@ -750,24 +889,21 @@ const SavedKeywords = (function() {
                 const row = document.createElement('tr');
                 row.className = `table-row ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'} border-b border-slate-100`;
                 
-                // Format the volume badge - match main table style
+                // Format the volume badge - match main table style with consistent rounded background
                 let volumeDisplay = '';
                 if (keyword.volume) {
-                    if (keyword.volume.includes('1M')) {
-                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            ${keyword.volume}
-                        </span>`;
-                    } else if (keyword.volume.toLowerCase() === 'na' || keyword.volume === '') {
-                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                    if (keyword.volume.toLowerCase() === 'na' || keyword.volume === '') {
+                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">
                             NA
                         </span>`;
                     } else {
-                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        // Use a consistent rounded style with light green background for all volume values
+                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">
                             ${keyword.volume}
                         </span>`;
                     }
                 } else {
-                    volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+                    volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">
                         NA
                     </span>`;
                 }
@@ -1079,66 +1215,76 @@ const SavedKeywords = (function() {
         }
         
         if (elements['delete-list-count']) {
-            elements['delete-list-count'].textContent = list.keywords.length;
+            const keywordCount = list.keywords ? list.keywords.length : (list.count || 0);
+            elements['delete-list-count'].textContent = keywordCount;
         }
         
-        // Store the list ID being deleted
-        state.deleteListId = listId;
-        
-        // Show the modal
+        // Store the list ID in the dataset for the delete function
         if (elements['delete-list-modal']) {
+            elements['delete-list-modal'].dataset.listId = listId;
             elements['delete-list-modal'].classList.remove('hidden');
         }
     }
 
     function deleteList() {
-        if (!state.deleteListId || !state.lists[state.deleteListId]) return;
-        
-        const listName = state.lists[state.deleteListId].name;
-        
-        // Delete the list
-        delete state.lists[state.deleteListId];
-        
-        // Save changes
-        saveLists();
-        
-        // If we deleted the active list, clear activeListId
-        if (state.activeListId === state.deleteListId) {
-            state.activeListId = null;
-            localStorage.setItem('activeListId', null);
-        }
-
-        // Update UI
-        updateSavedKeywordListsSidebar();
-        
-        // If no lists left, show "no lists" view
-        if (Object.keys(state.lists).length === 0) {
-            if (elements['saved-lists-content']) {
-                elements['saved-lists-content'].classList.add('hidden');
-            }
-            if (elements['no-saved-lists']) {
-                elements['no-saved-lists'].classList.remove('hidden');
-            }
-        } else if (state.activeListId === null) {
-            // If we don't have an active list, select the first available
-            const firstListId = Object.keys(state.lists)[0];
-            if (firstListId) {
-                state.activeListId = firstListId;
-                localStorage.setItem('activeListId', firstListId);
-                updateSavedKeywordsView();
-            }
-        } else {
-            // Just update the view with the current active list
-        updateSavedKeywordsView();
+        const listId = elements['delete-list-modal'].dataset.listId;
+        if (!listId || !state.lists[listId]) {
+            console.error('Invalid list id for deletion:', listId);
+            return;
         }
         
-        // Close the modal
-        if (elements['delete-list-modal']) {
+        // Show loading indicator
+        showNotification(`Deleting list "${listId}"...`);
+        
+        // Call the backend API to delete the list
+        fetch('/api/delete-list', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: listId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Error deleting list: ' + data.error);
+                return;
+            }
+            
+            // Remove from local state
+            delete state.lists[listId];
+            
+            // Clear list from the sidebar immediately
+            const sidebarItem = document.querySelector(`.saved-keyword-list-item[data-list-id="${listId}"]`);
+            if (sidebarItem) {
+                sidebarItem.remove();
+            }
+            
+            // If this was the active list, reset active
+            if (state.activeListId === listId) {
+                const remainingLists = Object.keys(state.lists);
+                state.activeListId = remainingLists.length > 0 ? remainingLists[0] : null;
+                localStorage.removeItem('activeListId'); // Remove instead of setting to empty
+            }
+            
+            // Clear any local storage caches that might cause stale UI
+            localStorage.removeItem('savedKeywordLists');
+            
+            // Close modal
             elements['delete-list-modal'].classList.add('hidden');
-        }
-        
-        // Show confirmation
-        showNotification(`Deleted list "${listName}"`);
+            
+            // Completely refresh the lists from backend
+            forceSyncSavedLists();
+            
+            // Show notification
+            showNotification(`List "${listId}" has been deleted`);
+        })
+        .catch(error => {
+            console.error('Error deleting list:', error);
+            alert('Failed to delete list. Please try again.');
+        });
     }
 
     // Helper functions
@@ -1507,12 +1653,128 @@ const SavedKeywords = (function() {
         }, 500);
     }
 
+    // Force sync with backend and clear all UI caches 
+    function forceSyncSavedLists() {
+        // Clear all related localStorage items
+        localStorage.removeItem('activeListId');
+        localStorage.removeItem('savedKeywordLists');
+        localStorage.removeItem('savedKeywordsPagination');
+
+        // Clear UI elements that might be stale
+        clearSavedKeywordListsContainer();
+        
+        // Re-fetch from backend
+        fetch('/api/saved-lists')
+            .then(response => response.json())
+            .then(data => {
+                // Convert the response to our state format
+                const lists = {};
+                
+                if (data.lists && data.lists.length > 0) {
+                    data.lists.forEach(list => {
+                        lists[list.name] = {
+                            name: list.name,
+                            count: list.count,
+                            keywords: [] // We'll fetch these when needed
+                        };
+                    });
+                    console.log("Loaded lists from backend:", Object.keys(lists));
+                } else {
+                    console.log("No saved lists found in backend during force sync");
+                }
+                
+                // Replace state with fresh data
+                state.lists = lists;
+                
+                // Update all UI components
+                updateSavedKeywordListsContainer();
+                updateSavedKeywordListsSidebar();
+                updateSavedKeywordsView();
+                
+                // Show notification
+                showNotification("Synced saved lists with server");
+            })
+            .catch(error => {
+                console.error('Error during force sync:', error);
+            });
+    }
+
+    // Clear the saved keyword lists container in the sidebar
+    function clearSavedKeywordListsContainer() {
+        const container = document.getElementById('saved-keyword-lists-container');
+        if (container) {
+            // Keep only the create list button and remove list items
+            const createListBtn = container.querySelector('#create-list-btn');
+            container.innerHTML = '';
+            if (createListBtn) {
+                container.appendChild(createListBtn);
+            }
+        }
+    }
+
+    // Update the saved keyword lists container in the sidebar
+    function updateSavedKeywordListsContainer() {
+        const container = document.getElementById('saved-keyword-lists-container');
+        if (!container) return;
+        
+        // Clear current items (except create list button)
+        clearSavedKeywordListsContainer();
+        
+        // Get list of saved lists
+        const listIds = Object.keys(state.lists);
+        if (listIds.length === 0) {
+            return; // No lists to display
+        }
+        
+        // Add each list to the container
+        listIds.forEach(listId => {
+            const list = state.lists[listId];
+            const keywordCount = list.count || (list.keywords ? list.keywords.length : 0);
+            
+            // Create list item
+            const listItem = document.createElement('div');
+            listItem.className = 'saved-keyword-list-item saved-keyword-list flex items-center justify-between p-2 rounded mb-1';
+            listItem.setAttribute('data-list-id', listId);
+            
+            listItem.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-list-ul mr-2 sidebar-item-icon preserve-icon"></i>
+                    <span class="sidebar-item-text">${list.name}</span>
+                </div>
+                <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded sidebar-item-text">${keywordCount}</span>
+            `;
+            
+            // Add to container before the create list button
+            const createListBtn = container.querySelector('#create-list-btn');
+            if (createListBtn) {
+                container.insertBefore(listItem, createListBtn);
+            } else {
+                container.appendChild(listItem);
+            }
+            
+            // Add click event to list item
+            listItem.addEventListener('click', e => {
+                e.preventDefault();
+                state.activeListId = listId;
+                localStorage.setItem('activeListId', listId);
+                
+                // Fetch keywords for this list
+                fetchSavedList(listId);
+                
+                // Update UI
+                setActiveView('saved');
+            });
+        });
+    }
+
     // Public API
     return {
-        init,
-        updateSidebar: updateSavedKeywordListsSidebar
+        init: init,
+        updateSavedKeywordListsSidebar: updateSavedKeywordListsSidebar,
+        updateSavedKeywordsView: updateSavedKeywordsView,
+        saveKeywordsToList: saveKeywordsToList
     };
 })();
 
-// Make the module available globally
-window.SavedKeywords = SavedKeywords;
+// Initialize the module
+document.addEventListener('DOMContentLoaded', SavedKeywords.init);

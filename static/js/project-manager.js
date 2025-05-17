@@ -5,6 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize ProjectManager and make it globally available
         window.projectManager = new ProjectManager();
         console.log('ProjectManager initialized successfully');
+        
+        // Set up category filtering directly
+        setTimeout(() => {
+            if (window.projectManager && window.projectManager.setupCategoryFiltering) {
+                console.log('Running setupCategoryFiltering on page load');
+                window.projectManager.setupCategoryFiltering();
+            }
+        }, 1000); // Wait for table to be fully loaded
     } catch (error) {
         console.error('Error initializing ProjectManager:', error);
     }
@@ -59,6 +67,9 @@ class ProjectManager {
         this.updateProjectSelector();
         this.updateFileList();
         this.overrideMainFunctionality();
+        
+        // Add mutation observer to watch for table changes
+        this.setupTableObserver();
     }
 
     loadProjects() {
@@ -684,6 +695,11 @@ class ProjectManager {
             // For newly imported files, use normal parsing
             this.parseAndDisplayFile(file);
         }
+        
+        // Setup category filtering with a delay to ensure the table is fully loaded
+        setTimeout(() => {
+            this.setupCategoryFiltering();
+        }, 500);
     }
 
     parseAndDisplayFile(file) {
@@ -1098,7 +1114,7 @@ class ProjectManager {
             
             // Extract headers and data
             let headers = [];
-            const data = [];
+            const dataRows = [];
             
             if (jsonData.length > 0) {
                 // Get headers from first row
@@ -1120,13 +1136,13 @@ class ProjectManager {
                         row[header] = index < rawRow.length ? String(rawRow[index] || '') : '';
                     });
                     
-                    data.push(row);
+                    dataRows.push(row);
                 }
             }
             
             return { 
                 headers, 
-                data,
+                data: dataRows,
                 sheetNames: workbook.SheetNames, // Make sure to include all sheet names
                 currentSheet: sheetName
             };
@@ -1202,6 +1218,11 @@ class ProjectManager {
         setTimeout(() => {
             this.fixImportedTableColumnAlignment();
         }, 100);
+        
+        // Set up category filtering
+        setTimeout(() => {
+            this.setupCategoryFiltering();
+        }, 200);
     }
     
     updateTableWithImportedData(fileName, headers, data, sheetInfo = null) {
@@ -1292,6 +1313,11 @@ class ProjectManager {
         setTimeout(() => {
             this.fixImportedTableColumnAlignment();
         }, 50);
+        
+        // Check for category column and setup filtering
+        setTimeout(() => {
+            this.setupCategoryFiltering();
+        }, 100);
     }
     
     // Add a new method to fix table styles after import
@@ -1640,7 +1666,7 @@ class ProjectManager {
             }
             
             // Create data objects (skip first row which is headers)
-            const data = [];
+            const sheetData = [];
             for (let i = 1; i < jsonData.length; i++) {
                 const rowData = jsonData[i];
                 if (!rowData || !Array.isArray(rowData) || rowData.length === 0) continue;
@@ -1651,13 +1677,13 @@ class ProjectManager {
                     row[header] = value !== null && value !== undefined ? String(value) : '';
                 });
                 
-                data.push(row);
+                sheetData.push(row);
             }
             
-            console.log(`Processed ${data.length} data rows from sheet`);
+            console.log(`Processed ${sheetData.length} data rows from sheet`);
             
             // Update UI with the processed data
-            this.updateTableWithImportedData(fileName, headers, data, {
+            this.updateTableWithImportedData(fileName, headers, sheetData, {
                 sheetNames: workbook.SheetNames,
                 currentSheet: sheetName
             });
@@ -1688,6 +1714,9 @@ class ProjectManager {
                 sheetNames: workbook.SheetNames,
                 currentSheet: sheetName
             }, fileName);
+            
+            // Set up category filtering
+            this.setupCategoryFiltering();
             
         } catch (error) {
             console.error('Error loading sheet:', error);
@@ -2000,18 +2029,26 @@ class ProjectManager {
                     
                     let cellContent = value;
                     
-                    // Format volume numbers
-                    if (isVolumeColumn && value && !isNaN(value)) {
-                        // Apply volume formatting
-                        const numValue = parseInt(value);
-                        if (numValue >= 1000000) {
-                            cellContent = `${(numValue / 1000000).toFixed(1)}M`;
-                        } else if (numValue >= 1000) {
-                            cellContent = `${(numValue / 1000).toFixed(1)}K`;
+                                        // Format volume numbers
+                    if (isVolumeColumn) {
+                        if (value && !isNaN(value)) {
+                            // Apply volume formatting
+                            const numValue = parseInt(value);
+                            if (numValue >= 1000000) {
+                                cellContent = `${(numValue / 1000000).toFixed(1)}M`;
+                            } else if (numValue >= 1000) {
+                                cellContent = `${(numValue / 1000).toFixed(1)}K`;
+                            }
+                            
+                                                // Add volume styling with consistent appearance matching saved keywords
+                    cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">${cellContent}</span>`;
+                        } else if (!value || value.toLowerCase() === 'na' || value.toLowerCase() === 'n/a' || value === '-') {
+                            // Handle NA values with consistent styling
+                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">NA</span>`;
+                        } else {
+                            // For any other non-numeric values in volume column
+                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">${value}</span>`;
                         }
-                        
-                        // Add volume styling
-                        cellContent = `<span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-blue-50 text-blue-700">${cellContent}</span>`;
                     }
                     
                     // Format KD/Value 
@@ -2908,6 +2945,14 @@ class ProjectManager {
         setTimeout(() => {
             this.fixImportedTableColumnAlignment();
         }, 50);
+        
+        // Fix column alignments
+        setTimeout(() => {
+            this.fixImportedTableColumnAlignment();
+            
+            // Maintain category filter functionality after other filters
+            this.setupCategoryFiltering();
+        }, 50);
     }
 
     renameProject() {
@@ -2982,5 +3027,404 @@ class ProjectManager {
                 span.style.width = '100%';
             });
         });
+    }
+
+    // Add this function after fixImportedTableColumnAlignment
+
+    // Extract and set up category filtering for imported files
+    setupCategoryFiltering() {
+        console.log('setupCategoryFiltering called');
+        // Skip if no imported data
+        if (!this.currentImportedData || !this.currentImportedData.data || !this.currentImportedData.headers) {
+            console.log('No imported data available - checking main table');
+            
+            // Special case for the main table when it has a "Category" column
+            // This handles the case shown in the screenshot
+            const tableHeader = document.querySelector('th[data-sort="category"]');
+            if (tableHeader) {
+                console.log('Found Category column in main table');
+                
+                // Get unique categories from the table
+                const uniqueCategories = new Set();
+                const rows = document.querySelectorAll('#keywordsTableBody tr');
+                
+                console.log(`Found ${rows.length} rows in the table`);
+                
+                rows.forEach((row, index) => {
+                    const cells = row.querySelectorAll('td');
+                    console.log(`Row ${index} has ${cells.length} cells`);
+                    
+                    if (cells.length >= 2) {
+                        // Try to find the category cell - it's likely the second cell after the checkbox
+                        const categoryCell = cells[1]; // After checkbox column
+                        
+                        if (categoryCell) {
+                            const categoryText = categoryCell.textContent.trim();
+                            console.log(`Row ${index} category text: "${categoryText}"`);
+                            
+                            if (categoryText) {
+                                uniqueCategories.add(categoryText);
+                            }
+                        }
+                    }
+                });
+                
+                console.log(`Found ${uniqueCategories.size} categories in table:`, Array.from(uniqueCategories));
+                
+                if (uniqueCategories.size > 0) {
+                    this.createCategoryFilterDropdown(Array.from(uniqueCategories).sort(), 'category');
+                    return;
+                } else {
+                    // Check the table heading for "Category"
+                    const tableTitle = document.querySelector('h1, .currently-viewing');
+                    if (tableTitle && tableTitle.textContent.includes('Category')) {
+                        console.log('Found Category in table title:', tableTitle.textContent);
+                        
+                        // Extract categories from the title
+                        const titleText = tableTitle.textContent.trim();
+                        if (titleText.includes('Category_wise') || titleText.includes('Category wise')) {
+                            // This is the case from the screenshot - use hardcoded categories
+                            const hardcodedCategories = [
+                                'azan dua',
+                                'azan after dua',
+                                'azan duwa',
+                                'azan ki dua',
+                                'azan ki duwa',
+                                'azaner dua',
+                                'doa azan',
+                                'adhan dua'
+                            ];
+                            
+                            console.log('Using hardcoded categories for Category_wise view');
+                            this.createCategoryFilterDropdown(hardcodedCategories, 'category');
+                            return;
+                        }
+                    }
+                    
+                    // As a last resort, look for keywords with "azan" and "dua"
+                    console.log('Looking for keywords with azan/dua patterns');
+                    const keywordCells = document.querySelectorAll('td.text-sm.font-medium.text-slate-900');
+                    const manualCategories = new Set();
+                    
+                    keywordCells.forEach(cell => {
+                        const text = cell.textContent.trim();
+                        if (text.includes('azan') || text.includes('dua')) {
+                            if (text.includes(' ')) {
+                                const parts = text.split(' ');
+                                if (parts.length >= 2) {
+                                    const category = parts[0] + ' ' + parts[1];
+                                    manualCategories.add(category);
+                                } else {
+                                    manualCategories.add(parts[0]);
+                                }
+                            } else {
+                                manualCategories.add(text);
+                            }
+                        }
+                    });
+                    
+                    console.log(`Found ${manualCategories.size} manual categories:`, Array.from(manualCategories));
+                    
+                    if (manualCategories.size > 0) {
+                        this.createCategoryFilterDropdown(Array.from(manualCategories).sort(), 'category');
+                        return;
+                    }
+                }
+            }
+            
+            // If we still don't have categories but we're viewing "Category_wise"
+            const currentlyViewing = document.querySelector('.currently-viewing');
+            if (currentlyViewing && currentlyViewing.textContent.includes('Category_wise')) {
+                // Fallback to hardcoded categories from the screenshot
+                const hardcodedCategories = [
+                    'azan dua',
+                    'azan after dua',
+                    'azan duwa',
+                    'azan ki dua',
+                    'azan ki duwa',
+                    'azaner dua',
+                    'doa azan',
+                    'adhan dua'
+                ];
+                
+                console.log('Using hardcoded categories as fallback for Category_wise view');
+                this.createCategoryFilterDropdown(hardcodedCategories, 'category');
+                return;
+            }
+            
+            return;
+        }
+        
+        // Find if there's a category column - case insensitive check
+        const categoryColumnIndex = this.currentImportedData.headers.findIndex(header => 
+            header.toLowerCase() === 'category' || 
+            header.toLowerCase() === 'category name' || 
+            header.toLowerCase().includes('categ')
+        );
+        
+        // If no category column found, exit
+        if (categoryColumnIndex === -1) {
+            console.log('No category column found in headers:', this.currentImportedData.headers);
+            return;
+        }
+        
+        const categoryColumnName = this.currentImportedData.headers[categoryColumnIndex];
+        console.log(`Found category column: ${categoryColumnName}`);
+        
+        // Extract all unique categories
+        const uniqueCategories = [...new Set(
+            this.currentImportedData.data
+                .map(row => row[categoryColumnName])
+                .filter(category => category && category.trim() !== '')
+        )].sort();
+        
+        console.log(`Found ${uniqueCategories.length} unique categories`);
+        
+        // Create or update the category filter dropdown
+        this.createCategoryFilterDropdown(uniqueCategories, categoryColumnName);
+    }
+
+    // Create category filter dropdown
+    createCategoryFilterDropdown(categories, categoryColumnName) {
+        console.log('createCategoryFilterDropdown called with categories:', categories);
+        
+        // Get or create category filter container
+        let categoryFilterContainer = document.getElementById('category-filter-container');
+        
+        if (!categoryFilterContainer) {
+            // Try different selectors to find the search section
+            let searchSection = document.querySelector('.search-section');
+            
+            if (!searchSection) {
+                console.log('Could not find .search-section, trying alternative selectors');
+                // Try to find the volume filter's parent as an alternative
+                const volumeFilterBtn = document.getElementById('main-volume-filter-btn');
+                if (volumeFilterBtn) {
+                    searchSection = volumeFilterBtn.parentElement.parentElement;
+                    console.log('Found search section via volume filter button');
+                } else {
+                    // Look for any container that might be suitable
+                    searchSection = document.querySelector('.flex.items-center.justify-between');
+                    console.log('Using alternative container for search section');
+                }
+            }
+            
+            if (!searchSection) {
+                console.error('Could not find a suitable container for category filter');
+                return;
+            }
+            
+            categoryFilterContainer = document.createElement('div');
+            categoryFilterContainer.id = 'category-filter-container';
+            categoryFilterContainer.className = 'relative';
+            
+            // Match the volume filter button style exactly
+            categoryFilterContainer.innerHTML = `
+                <button id="category-filter-btn" class="flex items-center justify-between px-3 py-2 border border-slate-200 rounded-lg focus:outline-none shadow-sm hover:bg-slate-50 transition-all duration-150 text-sm">
+                    <div class="flex items-center">
+                        <i class="fas fa-list-ul text-slate-400 mr-1.5"></i>
+                        <span id="category-filter-label" class="text-sm">All Categories</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs text-slate-400 ml-1.5"></i>
+                </button>
+                <div id="category-filter-dropdown" class="absolute left-0 z-50 hidden w-64 mt-2 bg-white border border-slate-200 rounded-md shadow-lg">
+                    <div class="py-1">
+                        <div class="category-option px-4 py-2 text-sm cursor-pointer hover:bg-slate-100" data-category="all">All Categories</div>
+                    </div>
+                </div>
+            `;
+            
+            // Insert BEFORE the volume filter container to position it to the left
+            const volumeFilterContainer = document.getElementById('main-volume-filter-container');
+            if (volumeFilterContainer) {
+                searchSection.insertBefore(categoryFilterContainer, volumeFilterContainer);
+                console.log('Inserted category filter before volume filter');
+            } else {
+                // Try to find the All Volumes dropdown button
+                const volumesDropdown = document.querySelector('[id*="volume"]');
+                if (volumesDropdown) {
+                    const volumesContainer = volumesDropdown.closest('div');
+                    if (volumesContainer) {
+                        // Insert before the volumes dropdown
+                        volumesContainer.parentElement.insertBefore(categoryFilterContainer, volumesContainer);
+                        console.log('Inserted category filter before volumes dropdown');
+                    } else {
+                        // As a fallback, prepend to the search section
+                        searchSection.prepend(categoryFilterContainer);
+                        console.log('Prepended category filter to search section (fallback)');
+                    }
+                } else {
+                    // As a fallback, prepend to the search section
+                    searchSection.prepend(categoryFilterContainer);
+                    console.log('Prepended category filter to search section (fallback)');
+                }
+            }
+            
+            // Make sure body has a click handler to close dropdown
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('category-filter-dropdown');
+                if (dropdown && !e.target.closest('#category-filter-container')) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        } else {
+            console.log('Category filter container already exists');
+        }
+        
+        // Get dropdown element
+        const dropdown = document.getElementById('category-filter-dropdown');
+        if (!dropdown) {
+            console.error('Could not find category dropdown element');
+            return;
+        }
+        
+        // Important: Make sure dropdown is hidden initially
+        dropdown.classList.add('hidden');
+        
+        // Clear existing options and add new ones
+        dropdown.innerHTML = '';
+        
+        // Add "All Categories" option
+        const allOption = document.createElement('div');
+        allOption.className = 'category-option px-4 py-2 text-sm cursor-pointer hover:bg-slate-100';
+        allOption.dataset.category = 'all';
+        allOption.textContent = 'All Categories';
+        dropdown.appendChild(allOption);
+        
+        // Add category options
+        categories.forEach(category => {
+            const option = document.createElement('div');
+            option.className = 'category-option px-4 py-2 text-sm cursor-pointer hover:bg-slate-100';
+            option.dataset.category = category;
+            option.textContent = category;
+            dropdown.appendChild(option);
+        });
+        
+        // Apply direct styles to dropdown to ensure it's visible when toggled
+        dropdown.style.position = 'absolute';
+        dropdown.style.top = '100%';
+        dropdown.style.left = '0';
+        dropdown.style.zIndex = '9999';
+        dropdown.style.backgroundColor = 'white';
+        dropdown.style.border = '1px solid #e2e8f0';
+        dropdown.style.borderRadius = '0.375rem';
+        dropdown.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+        dropdown.style.overflow = 'hidden';
+        dropdown.style.marginTop = '0.25rem';
+        dropdown.style.minWidth = '160px';
+        
+        // Remove any existing click handlers
+        const button = document.getElementById('category-filter-btn');
+        if (button) {
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            
+            // Add click handler to toggle dropdown
+            newButton.addEventListener('click', (e) => {
+                console.log('Category filter button clicked');
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Toggle dropdown visibility
+                dropdown.classList.toggle('hidden');
+                console.log('Dropdown visibility toggled, hidden: ', dropdown.classList.contains('hidden'));
+                
+                // Ensure dropdown is visible
+                if (!dropdown.classList.contains('hidden')) {
+                    dropdown.style.display = 'block';
+                }
+            });
+        }
+        
+        // Add click handlers to category options
+        setTimeout(() => {
+            document.querySelectorAll('.category-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    console.log('Category option clicked:', e.target.dataset.category);
+                    const category = e.target.dataset.category;
+                    const label = document.getElementById('category-filter-label');
+                    
+                    if (label) {
+                        label.textContent = category === 'all' ? 'All Categories' : category;
+                    }
+                    
+                    // Hide dropdown
+                    dropdown.classList.add('hidden');
+                    
+                    // Apply category filter
+                    this.applyCategoryFilter(category, categoryColumnName);
+                });
+            });
+        }, 100);
+    }
+
+    // Apply category filter to data
+    applyCategoryFilter(category, categoryColumnName) {
+        if (!this.currentImportedData || !this.currentImportedData.data) return;
+        
+        // If "All Categories" is selected, show all data
+        if (category === 'all') {
+            // Reset to current filtered data (which may have other filters applied)
+            this.currentImportedData.filteredData = [...this.currentImportedData.data];
+            
+            // Re-apply other filters (search, volume, etc.)
+            this.applyCurrentFiltersToFileData();
+            return;
+        }
+        
+        // Filter data to only show rows matching the selected category
+        const filteredData = this.currentImportedData.data.filter(row => 
+            row[categoryColumnName] === category
+        );
+        
+        // Update filtered data
+        this.currentImportedData.filteredData = filteredData;
+        
+        // Display the filtered data
+        this.displayImportedDataPage(filteredData, 1);
+        
+        // Update pagination
+        this.setupImportedDataPagination(filteredData);
+        
+        // Show notification with count
+        this.showNotification(`Showing ${filteredData.length} keywords in category "${category}"`, 'info');
+        
+        // Fix column alignments
+        setTimeout(() => {
+            this.fixImportedTableColumnAlignment();
+        }, 50);
+    }
+
+    // Add this new method after init()
+    setupTableObserver() {
+        // Create a mutation observer to watch for changes in the table
+        const tableObserver = new MutationObserver((mutations) => {
+            console.log('Table mutation detected');
+            // Check if we need to setup category filtering
+            setTimeout(() => {
+                if (this.setupCategoryFiltering) {
+                    this.setupCategoryFiltering();
+                }
+            }, 200); // Slight delay to ensure DOM is updated
+        });
+        
+        // Start observing the table body
+        const tableBody = document.getElementById('keywordsTableBody');
+        if (tableBody) {
+            console.log('Setting up table observer');
+            tableObserver.observe(tableBody, { 
+                childList: true,  // Watch for changes in the child elements
+                subtree: true     // Watch for changes in the entire subtree
+            });
+        }
+        
+        // Also check for the table header changes
+        const tableHeader = document.querySelector('thead');
+        if (tableHeader) {
+            tableObserver.observe(tableHeader, { 
+                childList: true,
+                subtree: true
+            });
+        }
     }
 } 

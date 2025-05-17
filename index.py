@@ -1,12 +1,10 @@
-from flask import Flask
-from flask import render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file
 import pandas as pd
 from rapidfuzz import process, fuzz
 import os
 import io
 import csv
-
-# For Excel file support
+import json
 import openpyxl
 from werkzeug.utils import secure_filename
 
@@ -18,6 +16,7 @@ available_sheets = []
 current_sheet = None
 data_file_path = None
 file_extension = None
+saved_lists = {}  # Dictionary to store saved keyword lists
 
 def detect_file_sheets(file_path):
     """Detect available sheets in the Excel file"""
@@ -27,12 +26,10 @@ def detect_file_sheets(file_path):
     
     if file_extension in ['.xlsx', '.xls', '.xlsm']:
         try:
-            # Use pandas Excel file functionality to get sheet names
             xls = pd.ExcelFile(file_path)
-            sheet_names = xls.sheet_names
-            available_sheets = sheet_names
-            return sheet_names
-        except Exception as e:
+            available_sheets = xls.sheet_names
+            return available_sheets
+        except Exception:
             available_sheets = []
             return []
     elif file_extension == '.csv':
@@ -41,6 +38,39 @@ def detect_file_sheets(file_path):
         available_sheets = [sheet_name]
         return [sheet_name]
     return []
+
+def load_saved_lists():
+    """Load saved keyword lists from JSON file"""
+    global saved_lists
+    
+    lists_file = os.path.join(os.path.dirname(__file__), 'data', 'saved_lists.json')
+    
+    if os.path.exists(lists_file):
+        try:
+            with open(lists_file, 'r') as f:
+                saved_lists = json.load(f)
+                
+                # Remove duplicate keywords in each list
+                for list_name in saved_lists:
+                    if saved_lists[list_name]:
+                        # Remove duplicates while preserving order
+                        saved_lists[list_name] = list(dict.fromkeys(saved_lists[list_name]))
+        except:
+            saved_lists = {}
+    else:
+        saved_lists = {}
+
+def save_lists_to_file():
+    """Save keyword lists to JSON file"""
+    global saved_lists
+    
+    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+    
+    lists_file = os.path.join(data_dir, 'saved_lists.json')
+    with open(lists_file, 'w') as f:
+        json.dump(saved_lists, f)
 
 def load_keywords_data(sheet_name=None):
     """Load keywords data from the file, optionally from a specific sheet"""
@@ -60,58 +90,57 @@ def load_keywords_data(sheet_name=None):
     elif available_sheets and not current_sheet:
         current_sheet = available_sheets[0]
     
-    if os.path.exists(data_file_path):
-        try:
-            # Check file extension to determine loading method
-            file_extension = os.path.splitext(data_file_path)[1].lower()
-            
-            if file_extension in ['.xlsx', '.xls', '.xlsm'] and current_sheet:
-                # For Excel files, load specific sheet
-                keywords_data = pd.read_excel(
-                    data_file_path,
-                    sheet_name=current_sheet,
-                    dtype=str,
-                    na_values=['', 'nan', 'NaN', 'NA', 'null'],
-                    keep_default_na=False,
-                    engine='openpyxl'
-                )
-            else:
-                # For CSV or when no sheet specified
-                keywords_data = pd.read_csv(
-                    data_file_path,
-                    dtype={'KW': str, 'Volumn': str, 'KD': str},
-                    na_values=['', 'nan', 'NaN', 'NA', 'null'],
-                    keep_default_na=False
-                )
+    if not os.path.exists(data_file_path):
+        keywords_data = pd.DataFrame(columns=['keyword', 'volume', 'value'])
+        return False
+        
+    try:
+        # Check file extension to determine loading method
+        file_extension = os.path.splitext(data_file_path)[1].lower()
+        
+        if file_extension in ['.xlsx', '.xls', '.xlsm'] and current_sheet:
+            # For Excel files, load specific sheet
+            keywords_data = pd.read_excel(
+                data_file_path,
+                sheet_name=current_sheet,
+                dtype=str,
+                na_values=['', 'nan', 'NaN', 'NA', 'null'],
+                keep_default_na=False,
+                engine='openpyxl'
+            )
+        else:
+            # For CSV or when no sheet specified
+            keywords_data = pd.read_csv(
+                data_file_path,
+                dtype=str,
+                na_values=['', 'nan', 'NaN', 'NA', 'null'],
+                keep_default_na=False
+            )
 
-            # Fill missing values with empty strings
-            keywords_data = keywords_data.fillna('')
+        # Fill missing values with empty strings
+        keywords_data = keywords_data.fillna('')
 
-            # Rename columns to match our application's expected format
-            if 'KW' in keywords_data.columns:
-                column_mapping = {'KW': 'keyword', 'Volumn': 'volume', 'KD': 'value'}
-                keywords_data = keywords_data.rename(columns=column_mapping)
-            
-            # If columns aren't properly mapped, try to identify them by position
-            if 'keyword' not in keywords_data.columns and keywords_data.shape[1] >= 3:
-                keywords_data.columns = ['keyword', 'volume', 'value'] + list(keywords_data.columns[3:])
-            
-            # Keep a lowercase copy for case-insensitive operations
-            keywords_data['keyword_lower'] = keywords_data['keyword'].str.lower()
+        # Rename columns to match our application's expected format
+        if 'KW' in keywords_data.columns:
+            column_mapping = {'KW': 'keyword', 'Volumn': 'volume', 'KD': 'value'}
+            keywords_data = keywords_data.rename(columns=column_mapping)
+        
+        # If columns aren't properly mapped, try to identify them by position
+        if 'keyword' not in keywords_data.columns and keywords_data.shape[1] >= 3:
+            keywords_data.columns = ['keyword', 'volume', 'value'] + list(keywords_data.columns[3:])
+        
+        # Keep a lowercase copy for case-insensitive operations
+        keywords_data['keyword_lower'] = keywords_data['keyword'].str.lower()
 
-            # Handle CSV parsing issues if they occur
-            if keywords_data.shape[1] == 1 and 'keyword' in keywords_data.columns:
-                # Split the keyword column if it contains delimiter characters
-                if keywords_data['keyword'].str.contains(',').any():
-                    keywords_data['keyword'] = keywords_data['keyword'].str.split(',').str[0]
-                    keywords_data['volume'] = ''
-                    keywords_data['value'] = ''
+        # Handle CSV parsing issues if they occur
+        if keywords_data.shape[1] == 1 and 'keyword' in keywords_data.columns:
+            if keywords_data['keyword'].str.contains(',').any():
+                keywords_data['keyword'] = keywords_data['keyword'].str.split(',').str[0]
+                keywords_data['volume'] = ''
+                keywords_data['value'] = ''
 
-            return True
-        except Exception as e:
-            keywords_data = pd.DataFrame(columns=['keyword', 'volume', 'value'])
-            return False
-    else:
+        return True
+    except Exception:
         keywords_data = pd.DataFrame(columns=['keyword', 'volume', 'value'])
         return False
 
@@ -123,6 +152,8 @@ def clean_keyword(keyword):
 
 @app.route('/')
 def index():
+    # Load saved lists when application starts
+    load_saved_lists()
     return render_template('index.html')
 
 @app.route('/api/sheets', methods=['GET'])
@@ -240,17 +271,17 @@ def get_keywords():
     search_type = request.args.get('search_type', 'partial')
 
     # Pagination parameters
-    page = int(request.args.get('page', 1))
+    page = max(1, int(request.args.get('page', 1)))
     page_size = int(request.args.get('page_size', 200))
 
     # Verify sort column exists, if not use 'keyword'
     if sort_by not in keywords_data.columns:
         sort_by = 'keyword'
 
-    # Use boolean indexing for more efficient filtering (avoids copy)
+    # Use boolean indexing for more efficient filtering
     mask = pd.Series(True, index=keywords_data.index)
 
-    # Apply volume filter if provided - more efficient with boolean mask
+    # Apply volume filter if provided
     if volume_filter:
         if volume_filter == 'blank':
             # Filter for rows where volume is empty string or 'NA' (case-insensitive)
@@ -262,7 +293,7 @@ def get_keywords():
         elif volume_filter == '1M-10M':
             mask &= keywords_data['volume'].str.contains('1M', case=False, na=False)
 
-    # Apply the mask to get filtered results - no need for a copy operation here
+    # Apply the mask to get filtered results
     filtered_data = keywords_data[mask]
 
     # Match percentage column for sorting
@@ -273,8 +304,7 @@ def get_keywords():
         # Determine the scorer based on search type
         scorer = fuzz.partial_ratio if search_type == 'partial' else fuzz.ratio
 
-        # Fast C-optimized fuzzy match via RapidFuzz - more efficient loop approach for large datasets
-        # Gather all keywords for faster processing
+        # Fast fuzzy match via RapidFuzz - more efficient batch processing
         all_keywords = filtered_data['keyword'].tolist()
         matches = {}
         
@@ -313,10 +343,7 @@ def get_keywords():
     total_pages = max(1, (total_results + page_size - 1) // page_size)
 
     # Ensure page is within bounds
-    if page < 1:
-        page = 1
-    elif page > total_pages:
-        page = total_pages
+    page = min(page, total_pages)
 
     # Apply pagination
     start_idx = (page - 1) * page_size
@@ -324,14 +351,12 @@ def get_keywords():
     paginated_data = filtered_data.iloc[start_idx:end_idx]
 
     # Convert to dictionary and ensure all fields are present
-    result = []
-    for _, row in paginated_data.iterrows():
-        result.append({
-            'keyword': str(clean_keyword(row.get('keyword', ''))),
-            'volume': str(row.get('volume', '')),
-            'value': str(row.get('value', '')),
-            'match_percentage': row.get('match_percentage', 0)
-        })
+    result = [{
+        'keyword': str(clean_keyword(row.get('keyword', ''))),
+        'volume': str(row.get('volume', '')),
+        'value': str(row.get('value', '')),
+        'match_percentage': row.get('match_percentage', 0)
+    } for _, row in paginated_data.iterrows()]
 
     # Return data with pagination metadata
     return jsonify({
@@ -394,14 +419,146 @@ def export_keywords():
         mimetype='text/csv'
     )
 
-if __name__ == '__main__':
-    # Install openpyxl if not already installed
-    try:
-        import openpyxl
-    except ImportError:
-        import subprocess
-        subprocess.call(['pip', 'install', 'openpyxl'])
+# API endpoints for saved keyword lists functionality
+
+@app.route('/api/saved-lists', methods=['GET'])
+def get_saved_lists():
+    """API endpoint to get all saved keyword lists"""
+    global saved_lists
     
+    # Load saved lists if not already loaded
+    if not saved_lists:
+        load_saved_lists()
+    
+    result = [
+        {'name': list_name, 'count': len(keywords)} 
+        for list_name, keywords in saved_lists.items()
+    ]
+    
+    return jsonify({'lists': result})
+
+@app.route('/api/saved-list', methods=['GET'])
+def get_saved_list():
+    """API endpoint to get keywords from a specific saved list"""
+    global saved_lists, keywords_data
+    
+    # Get list name from query parameters
+    list_name = request.args.get('name', '').strip()
+    
+    if not list_name or list_name not in saved_lists:
+        return jsonify({'error': 'Invalid list name'}), 400
+    
+    # Get keywords from the saved list and ensure no duplicates
+    saved_keywords = list(dict.fromkeys(saved_lists[list_name]))
+    
+    # Match with the current dataset to get full details if available
+    if keywords_data is not None and not keywords_data.empty:
+        # Dictionary to store best match for each keyword
+        keyword_details = {}
+        
+        # Filter the keywords data to include only saved keywords
+        matched_data = keywords_data[keywords_data['keyword'].isin(saved_keywords)]
+        
+        # Group by keyword and select entry with highest volume
+        for keyword in saved_keywords:
+            # Get all entries for this keyword
+            keyword_rows = matched_data[matched_data['keyword'] == keyword]
+            
+            if not keyword_rows.empty:
+                # Prioritize rows with volume data (not NA or empty)
+                has_volume = keyword_rows[(keyword_rows['volume'] != '') & (keyword_rows['volume'].str.lower() != 'na')]
+                
+                if not has_volume.empty:
+                    # Use the first entry with volume
+                    selected_row = has_volume.iloc[0]
+                else:
+                    # If no entry has volume, just use the first one
+                    selected_row = keyword_rows.iloc[0]
+                
+                keyword_details[keyword] = {
+                    'keyword': str(clean_keyword(selected_row.get('keyword', ''))),
+                    'volume': str(selected_row.get('volume', '')),
+                    'value': str(selected_row.get('value', ''))
+                }
+            else:
+                # Add keyword with empty details if not found
+                keyword_details[keyword] = {
+                    'keyword': keyword,
+                    'volume': '',
+                    'value': ''
+                }
+        
+        # Prepare results in the original order
+        result = [keyword_details[kw] for kw in saved_keywords]
+    else:
+        # If no data is loaded, just return the keywords without volume and value
+        result = [{'keyword': kw, 'volume': '', 'value': ''} for kw in saved_keywords]
+    
+    return jsonify({
+        'list_name': list_name,
+        'keywords': result
+    })
+
+@app.route('/api/save-list', methods=['POST'])
+def save_keyword_list():
+    """API endpoint to save a new keyword list"""
+    global saved_lists
+    
+    data = request.get_json()
+    list_name = data.get('name', '').strip()
+    keywords = data.get('keywords', [])
+    
+    if not list_name:
+        return jsonify({'error': 'List name is required'}), 400
+    
+    if not keywords:
+        return jsonify({'error': 'No keywords provided'}), 400
+    
+    # Clean keywords
+    cleaned_keywords = [clean_keyword(kw) for kw in keywords]
+    
+    # Remove duplicates by converting to set and back to list
+    cleaned_keywords = list(dict.fromkeys(cleaned_keywords))
+    
+    # Save the list
+    saved_lists[list_name] = cleaned_keywords
+    
+    # Save to file
+    save_lists_to_file()
+    
+    return jsonify({
+        'success': True,
+        'list_name': list_name,
+        'count': len(cleaned_keywords)
+    })
+
+@app.route('/api/delete-list', methods=['POST'])
+def delete_keyword_list():
+    """API endpoint to delete a saved keyword list"""
+    global saved_lists
+    
+    data = request.get_json()
+    list_name = data.get('name', '').strip()
+    
+    if not list_name or list_name not in saved_lists:
+        return jsonify({'error': 'Invalid list name'}), 400
+    
+    # Delete the list
+    del saved_lists[list_name]
+    
+    # Save changes to file
+    save_lists_to_file()
+    
+    return jsonify({'success': True})
+
+if __name__ == '__main__':
+    # Ensure data folder exists
+    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+        
     # Load data once at startup
     load_keywords_data()
+    # Load saved lists at startup
+    load_saved_lists()
     app.run(debug=True)
