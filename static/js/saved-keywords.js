@@ -889,43 +889,72 @@ const SavedKeywords = (function() {
                 const row = document.createElement('tr');
                 row.className = `table-row ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50'} border-b border-slate-100`;
                 
-                // Format the volume badge - match main table style with consistent rounded background
+                // Format the volume badge - different colors for different ranges
                 let volumeDisplay = '';
                 if (keyword.volume) {
                     if (keyword.volume.toLowerCase() === 'na' || keyword.volume === '') {
-                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">
+                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">
                             NA
                         </span>`;
+                    } else if (keyword.volume.toLowerCase().includes('1m') || keyword.volume.toLowerCase().includes('10m')) {
+                        // 1M-10M range - light red
+                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">
+                            ${keyword.volume}
+                        </span>`;
+                    } else if (keyword.volume.toLowerCase().includes('100k') || (keyword.volume.toLowerCase().includes('k') && !keyword.volume.toLowerCase().includes('10k'))) {
+                        // 100K-1M range - light blue
+                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">
+                            ${keyword.volume}
+                        </span>`;
+                    } else if (keyword.volume.toLowerCase().includes('10k')) {
+                        // 10K-100K range - light green
+                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">
+                            ${keyword.volume}
+                        </span>`;
                     } else {
-                        // Use a consistent rounded style with light green background for all volume values
-                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">
+                        // Default for other volume values
+                        volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">
                             ${keyword.volume}
                         </span>`;
                     }
                 } else {
-                    volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">
+                    volumeDisplay = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">
                         NA
                     </span>`;
                 }
                 
-                // Format value/KD - match main table style
+                // Format value/KD - with specified colors
                 let valueDisplay = '';
                 if (keyword.value && keyword.value !== '') {
                     // Try to parse as number
                     const valueNum = parseFloat(keyword.value);
                     if (!isNaN(valueNum)) {
                         if (valueNum <= 15) {
-                            valueDisplay = '<span class="text-green-600 font-medium">Low</span>';
+                            // Light yellow for low difficulty
+                            valueDisplay = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">Low</span>';
                         } else if (valueNum <= 30) {
-                            valueDisplay = '<span class="text-amber-600 font-medium">Medium</span>';
+                            // Light orange for medium difficulty
+                            valueDisplay = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">Medium</span>';
                         } else {
-                            valueDisplay = '<span class="text-red-600 font-medium">High</span>';
+                            // Light red for high difficulty
+                            valueDisplay = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">High</span>';
+                        }
+                    } else if (typeof keyword.value === 'string') {
+                        // Handle string values like "Low", "Medium", "High"
+                        if (keyword.value.toLowerCase() === 'low') {
+                            valueDisplay = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">Low</span>';
+                        } else if (keyword.value.toLowerCase() === 'medium') {
+                            valueDisplay = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">Medium</span>';
+                        } else if (keyword.value.toLowerCase() === 'high') {
+                            valueDisplay = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">High</span>';
+                        } else {
+                            valueDisplay = keyword.value;
                         }
                     } else {
                         valueDisplay = keyword.value;
                     }
                 } else {
-                    valueDisplay = '-';
+                    valueDisplay = '<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">-</span>';
                 }
 
                 row.innerHTML = `

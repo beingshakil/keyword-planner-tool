@@ -2029,39 +2029,77 @@ class ProjectManager {
                     
                     let cellContent = value;
                     
-                                        // Format volume numbers
+                                                            // Format volume numbers with different colors for different ranges
                     if (isVolumeColumn) {
+                        // Determine volume range and apply appropriate styling
                         if (value && !isNaN(value)) {
                             // Apply volume formatting
                             const numValue = parseInt(value);
+                            let volumeClass = ""; // Will determine background and text color
+                            
+                            // Format number for display
                             if (numValue >= 1000000) {
                                 cellContent = `${(numValue / 1000000).toFixed(1)}M`;
-                            } else if (numValue >= 1000) {
+                                volumeClass = "bg-red-100 text-red-800"; // 1M+ range - light red
+                            } else if (numValue >= 100000) {
                                 cellContent = `${(numValue / 1000).toFixed(1)}K`;
+                                volumeClass = "bg-blue-100 text-blue-800"; // 100K+ range
+                            } else if (numValue >= 10000) {
+                                cellContent = `${(numValue / 1000).toFixed(1)}K`;
+                                volumeClass = "bg-green-100 text-green-800"; // 10K+ range
+                            } else {
+                                cellContent = `${(numValue / 1000).toFixed(1)}K`;
+                                volumeClass = "bg-teal-100 text-teal-800"; // Default for other values
                             }
                             
-                                                // Add volume styling with consistent appearance matching saved keywords
-                    cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">${cellContent}</span>`;
+                            // Add volume styling with consistent appearance matching saved keywords
+                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${volumeClass}" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">${cellContent}</span>`;
+                        } else if (value && typeof value === 'string') {
+                            // Handle string values like "10K-100K" or "1M-10M"
+                            let volumeClass = "";
+                            
+                            if (value.toLowerCase().includes('1m') || value.toLowerCase().includes('10m')) {
+                                volumeClass = "bg-red-100 text-red-800"; // 1M-10M range - light red
+                            } else if (value.toLowerCase().includes('100k') || (value.toLowerCase().includes('k') && !value.toLowerCase().includes('10k'))) {
+                                volumeClass = "bg-blue-100 text-blue-800"; // 100K-1M range
+                            } else if (value.toLowerCase().includes('10k')) {
+                                volumeClass = "bg-green-100 text-green-800"; // 10K-100K range
+                            } else {
+                                volumeClass = "bg-gray-100 text-gray-800"; // Default
+                            }
+                            
+                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${volumeClass}" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">${value}</span>`;
                         } else if (!value || value.toLowerCase() === 'na' || value.toLowerCase() === 'n/a' || value === '-') {
                             // Handle NA values with consistent styling
-                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">NA</span>`;
+                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">NA</span>`;
                         } else {
                             // For any other non-numeric values in volume column
-                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" style="display: inline-block; width: auto; min-width: 80px; text-align: center;">${value}</span>`;
+                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">${value}</span>`;
                         }
                     }
                     
-                    // Format KD/Value 
-                    if (isValueColumn && value && !isNaN(value)) {
-                        const numValue = parseFloat(value);
-                        
-                        // Determine difficulty level based on KD value
-                        if (numValue <= 15) {
-                            cellContent = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Low (${value})</span>`;
-                        } else if (numValue <= 30) {
-                            cellContent = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Medium (${value})</span>`;
-                        } else {
-                            cellContent = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">High (${value})</span>`;
+                    // Format KD/Value with specific color scheme
+                    if (isValueColumn && value) {
+                        if (!isNaN(value)) {
+                            const numValue = parseFloat(value);
+                            
+                            // Determine difficulty level based on KD value with specific colors
+                            if (numValue <= 15) {
+                                // Light yellow for Low
+                                cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">Low</span>`;
+                            } else if (numValue <= 30) {
+                                // Light orange for Medium
+                                cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">Medium</span>`;
+                            } else {
+                                // Light red for High
+                                cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">High</span>`;
+                            }
+                        } else if (value.toLowerCase() === 'low') {
+                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">Low</span>`;
+                        } else if (value.toLowerCase() === 'medium') {
+                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">Medium</span>`;
+                        } else if (value.toLowerCase() === 'high') {
+                            cellContent = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800" style="display: inline-block; width: 80px; min-width: 80px; text-align: center;">High</span>`;
                         }
                     }
                     
